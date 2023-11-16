@@ -1,0 +1,242 @@
+-- Merging decision tree log ---
+application
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:7:5-37:19
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+MERGED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-17:19
+MERGED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:7:5-17:19
+MERGED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:24:5-31:19
+MERGED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:24:5-31:19
+MERGED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:28:5-89
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/3d7c17150f9416193f4c2f3767d32c0f/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/3d7c17150f9416193f4c2f3767d32c0f/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:28:18-86
+	android:name
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml
+manifest
+ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:1:1-38:12
+MERGED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:1:1-38:12
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml:1:1-7:12
+MERGED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-19:12
+MERGED from [:flutter_plugin_android_lifecycle] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:fluttertoast] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/namitamhatre/.gradle/caches/transforms-3/7e90bdb9f2d95d6a8cbf339d66d87c21/transformed/fragment-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.7.2] /Users/namitamhatre/.gradle/caches/transforms-3/c7c42b8d083337062fc4a6a9d6f3e315/transformed/jetified-activity-1.7.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.window:window-java:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/d47ce85368fc56d575b8562826fe6445/transformed/jetified-window-java-1.0.0-beta04/AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/f3d2ddab73c0882bd8abc3c468ef8dea/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/5124b59792d6369047701a6449a0e39e/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.core:core-ktx:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/0c9909e5dd9eb6f8a972e14d8dcbdb8f/transformed/jetified-core-ktx-1.10.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/8b2f0e2c41faae1a5574a70e40569283/transformed/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa5497265b620e1cf029fc25c6d11aa/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/86ae4af9bd7848e3b1756fb878f79054/transformed/lifecycle-livedata-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa1d642cce134bc28a8be408e92f27b/transformed/lifecycle-livedata-core-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/f2f7d116a22795cf2d608578b775e491/transformed/lifecycle-viewmodel-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/ee0426ca79724a0bcfc185652d8c9ed4/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/1f5b7908158002238456f3b55c8062c3/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/namitamhatre/.gradle/caches/transforms-3/fcc9bd936fb0c328bce78d3840a8740c/transformed/exifinterface-1.3.6/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/c1c7394ce91e63012ee25855d57f1f5c/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/bc9adc80ec1c3fe97204c11771cdf0aa/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/3d7c17150f9416193f4c2f3767d32c0f/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/namitamhatre/.gradle/caches/transforms-3/17b17409b5db49968cfd5c462197b00e/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/a5f5bfdc94800354db4557f8f4040e44/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:1:11-69
+uses-feature#android.hardware.camera
+ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:3:5-84
+	android:required
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:3:58-82
+	android:name
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:3:19-57
+uses-permission#android.permission.CAMERA
+ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:4:5-65
+	android:name
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:4:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/AndroidManifest.xml:5:22-77
+uses-permission#android.permission.INTERNET
+ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml:6:5-66
+	android:name
+		ADDED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml:6:22-64
+uses-sdk
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+MERGED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:flutter_plugin_android_lifecycle] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:flutter_plugin_android_lifecycle] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:fluttertoast] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:fluttertoast] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/fluttertoast/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/namitamhatre/.gradle/caches/transforms-3/7e90bdb9f2d95d6a8cbf339d66d87c21/transformed/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/namitamhatre/.gradle/caches/transforms-3/7e90bdb9f2d95d6a8cbf339d66d87c21/transformed/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.7.2] /Users/namitamhatre/.gradle/caches/transforms-3/c7c42b8d083337062fc4a6a9d6f3e315/transformed/jetified-activity-1.7.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.7.2] /Users/namitamhatre/.gradle/caches/transforms-3/c7c42b8d083337062fc4a6a9d6f3e315/transformed/jetified-activity-1.7.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window:window-java:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/d47ce85368fc56d575b8562826fe6445/transformed/jetified-window-java-1.0.0-beta04/AndroidManifest.xml:19:5-21:41
+MERGED from [androidx.window:window-java:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/d47ce85368fc56d575b8562826fe6445/transformed/jetified-window-java-1.0.0-beta04/AndroidManifest.xml:19:5-21:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/f3d2ddab73c0882bd8abc3c468ef8dea/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/f3d2ddab73c0882bd8abc3c468ef8dea/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/5124b59792d6369047701a6449a0e39e/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/5124b59792d6369047701a6449a0e39e/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core-ktx:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/0c9909e5dd9eb6f8a972e14d8dcbdb8f/transformed/jetified-core-ktx-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/0c9909e5dd9eb6f8a972e14d8dcbdb8f/transformed/jetified-core-ktx-1.10.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/8b2f0e2c41faae1a5574a70e40569283/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/8b2f0e2c41faae1a5574a70e40569283/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa5497265b620e1cf029fc25c6d11aa/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa5497265b620e1cf029fc25c6d11aa/transformed/jetified-savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/86ae4af9bd7848e3b1756fb878f79054/transformed/lifecycle-livedata-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/86ae4af9bd7848e3b1756fb878f79054/transformed/lifecycle-livedata-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa1d642cce134bc28a8be408e92f27b/transformed/lifecycle-livedata-core-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/6aa1d642cce134bc28a8be408e92f27b/transformed/lifecycle-livedata-core-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/f2f7d116a22795cf2d608578b775e491/transformed/lifecycle-viewmodel-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/f2f7d116a22795cf2d608578b775e491/transformed/lifecycle-viewmodel-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/ee0426ca79724a0bcfc185652d8c9ed4/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/ee0426ca79724a0bcfc185652d8c9ed4/transformed/lifecycle-runtime-2.6.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/1f5b7908158002238456f3b55c8062c3/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1] /Users/namitamhatre/.gradle/caches/transforms-3/1f5b7908158002238456f3b55c8062c3/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/namitamhatre/.gradle/caches/transforms-3/fcc9bd936fb0c328bce78d3840a8740c/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.exifinterface:exifinterface:1.3.6] /Users/namitamhatre/.gradle/caches/transforms-3/fcc9bd936fb0c328bce78d3840a8740c/transformed/exifinterface-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/c1c7394ce91e63012ee25855d57f1f5c/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/c1c7394ce91e63012ee25855d57f1f5c/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/bc9adc80ec1c3fe97204c11771cdf0aa/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/namitamhatre/.gradle/caches/transforms-3/bc9adc80ec1c3fe97204c11771cdf0aa/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/3d7c17150f9416193f4c2f3767d32c0f/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/3d7c17150f9416193f4c2f3767d32c0f/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/namitamhatre/.gradle/caches/transforms-3/17b17409b5db49968cfd5c462197b00e/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /Users/namitamhatre/.gradle/caches/transforms-3/17b17409b5db49968cfd5c462197b00e/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/a5f5bfdc94800354db4557f8f4040e44/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/a5f5bfdc94800354db4557f8f4040e44/transformed/jetified-annotation-experimental-1.3.0/AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/debug/AndroidManifest.xml
+provider#io.flutter.plugins.imagepicker.ImagePickerFileProvider
+ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:8:9-16:20
+	android:grantUriPermissions
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-47
+	android:authorities
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:13-74
+	android:exported
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-37
+	android:name
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:13-82
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-15:75
+	android:resource
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:17-72
+	android:name
+		ADDED from [:image_picker_android] /Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:17-67
+uses-library#androidx.window.extensions
+ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:25:9-27:40
+	android:required
+		ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:26:13-54
+uses-library#androidx.window.sidecar
+ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:28:9-30:40
+	android:required
+		ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:30:13-37
+	android:name
+		ADDED from [androidx.window:window:1.0.0-beta04] /Users/namitamhatre/.gradle/caches/transforms-3/1768ad6907db91025c9ba021bd86386c/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:29:13-51
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:23:9-81
+permission#com.example.tourist_guide_app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:26:22-94
+uses-permission#com.example.tourist_guide_app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.10.1] /Users/namitamhatre/.gradle/caches/transforms-3/5911dc73a3b703274ca5517454d1ad5b/transformed/core-1.10.1/AndroidManifest.xml:26:22-94
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/namitamhatre/.gradle/caches/transforms-3/6fb85cddfa76d54c1e573bc54f22b9bc/transformed/jetified-startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.0] /Users/namitamhatre/.gradle/caches/transforms-3/5ed622ed09c5f01fb9572837d6a847d7/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
