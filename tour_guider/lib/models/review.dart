@@ -1,6 +1,8 @@
+
 class Review {
   String id; // Unique identifier for the review
   String userId; // ID of the user who wrote the review
+  // Todo: userName acts as foreign key from User model
   String userName; // Name of the user for display purposes
   String subject; // Subject or title of the review
   String content; // Main content text of the review
@@ -19,7 +21,7 @@ class Review {
     required this.date,
     this.userProfilePhoto = '',
     List<String>? images, // Initialize with an empty list by default
-  }) : this.images = images ?? [];
+  }) : images = images ?? [];
 
   // Factory method to create a Review from a map (e.g., JSON)
   factory Review.fromJson(Map<String, dynamic> json) {

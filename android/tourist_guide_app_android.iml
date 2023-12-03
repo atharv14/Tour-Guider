@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="CheckStyle-IDEA-Module" serialisationVersion="2">
+    <option name="activeLocationsIds" />
+  </component>
   <component name="FacetManager">
     <facet type="android" name="Android">
       <configuration>
@@ -21,10 +24,9 @@
       <sourceFolder url="file://$MODULE_DIR$/app/src/main/kotlin" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 30 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Flutter for Android" level="project" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" exported="" name="KotlinJavaRuntime" level="project" />
   </component>
   <component name="SonarLintModuleSettings">
     <option name="uniqueId" value="f0817256-806f-4c7a-9875-d755d96de92b" />

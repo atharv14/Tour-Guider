@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import '../models/user.dart'; // Import User model class
-import '../models/place.dart'; // Make sure this path matches your file structure
-import '../models/review.dart'; // Make sure this path matches your file structure
+//
+import '../models/place.dart'; //
+import '../models/review.dart'; //
 import '../provider/UserProvider.dart'; // Import UserProvider
+import '../provider/ReviewProvider.dart'; // Import ReviewProvider
 import 'add_edit_review_screen.dart';
 import 'login_screen.dart'; // Import login screen
 import 'place_list_view.dart'; //Import places view screen
@@ -13,17 +14,12 @@ import 'review_detail_screen.dart'; // Import Review view Screen
 
 class PlaceDetailScreen extends StatefulWidget {
   final Place place;
-  final List<Review> reviews; // list of reviews for this place
-  final List<Place> places;
   final Function(bool) onFavoriteChanged;
 
   const PlaceDetailScreen(
-      {Key? key,
+      {super.key,
       required this.place,
-      required this.reviews,
-      required this.places,
-      required this.onFavoriteChanged})
-      : super(key: key);
+      required this.onFavoriteChanged});
 
   @override
   _PlaceDetailScreenState createState() => _PlaceDetailScreenState();
@@ -33,20 +29,36 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   late FToast fToast; // Declare FToast instance
   late List<Place> places;
   bool showFavoritesOnly = false;
-  String selectedSortOption = 'New to Old'; // Default sort option
+  String selectedSortOption = 'New to Old';
+
+  var isAdmin = true; // Default sort option
 
   @override
   void initState() {
     super.initState();
-    places = widget.places;
+    // places = widget.places;
     fToast = FToast();
     fToast.init(context); // Initialize FToast with context
+    // Future.microtask(() =>
+    //     Provider.of<ReviewProvider>(context, listen: false)
+    //         .fetchReviewsForPlace(widget.place.id));
   }
 
   @override
   Widget build(BuildContext context) {
+    // Access ReviewProvider to get the list of reviews
+    List<Review> reviews = Provider.of<ReviewProvider>(context).reviews;
+    // Access user data using Provider
+    final userProvider = Provider.of<UserProvider>(context);
+    final bool isFavorite = userProvider.user?.savedPlaces.contains(widget.place.id) ?? false;
+    // final bool isAdmin = user?.isAdmin ?? true;
+
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _onBackPressed, // Call this when back button is pressed
+        ),
         title: Text(widget.place.name),
         actions: <Widget>[
           IconButton(
@@ -57,10 +69,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PlacesViewScreen(places: places)),
+                    builder: (context) => const PlacesViewScreen()),
                 ModalRoute.withName('/'),
               );
             },
+            tooltip: 'Home',
           ),
           IconButton(
             icon: const Icon(Icons.account_circle),
@@ -70,10 +83,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UserProfileScreen(),
+                  builder: (context) => const UserProfileScreen(),
                 ),
               );
             },
+            tooltip: 'User Profile',
           ),
           IconButton(
             icon: const Icon(Icons.logout),
@@ -82,10 +96,20 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               _showToast();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
               );
             },
+            tooltip: 'Logout',
           ),
+          if (isAdmin)
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  //ToDo Handle Place Settings
+
+                },
+                tooltip: 'Edit the place',
+              ),
         ],
       ),
       body: Column(
@@ -114,19 +138,29 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                   .imageUrl[imageIndex], // Use each image URL
                               fit: BoxFit.cover,
                               width: 100, // Adjust as needed
+                              errorBuilder: (context, error, stackTrace) {
+                                // Return an error widget here if the image fails to load
+                                return const Icon(Icons
+                                    .broken_image); // Placeholder for a broken image
+                              },
                             ),
                           );
                         },
                       ),
                     ),
                     IconButton(
-                      icon: Icon(widget.place.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border),
-                      color:
-                          widget.place.isFavorite ? Colors.red : Colors.black,
-                      onPressed:
-                          _toggleFavorite, // Updated to call the local method
+                      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.black,
+                      ),
+                      onPressed: () async {
+                        bool success = await userProvider.savePlaceForUser(widget.place.id);
+                        if (success) {
+                          await userProvider.updateFavoriteStatus(widget.place.id, !isFavorite);
+                          setState(() {});
+                        } else {
+                          // Handle failure (e.g., show a message)
+                        }
+                      }, // Updated to call the local method
                     ),
                   ],
                 ),
@@ -162,10 +196,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Text('Rating: ${widget.place.averageRating}'),
-                            Text('Reviews: ${widget.place.reviewCount}'),
+                            Text('Reviews: ${widget.place.totalReviews}'),
                             Text('Location: ${widget.place.location}'),
                             Text('Contact: ${widget.place.contactInfo}'),
-                            Text('Timings: ${widget.place.timings}'),
+                            Text('Operating Hours: ${widget.place.operatingHours}'),
                           ],
                         ),
                       ],
@@ -204,138 +238,176 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ),
 
           // reviews
-          Expanded(
-            flex: 60, // 60% of the screen for reviews
-            child: ListView.builder(
-              itemCount: widget.reviews.length,
-              itemBuilder: (context, index) {
-                final review = widget.reviews[index];
-                // Assuming review has a list of image URLs named 'imageUrls'
-                List<String> topThreeImages = review.images.take(3).toList();
-                // Access user data using Provider
-                final user = Provider.of<UserProvider>(context).user;
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to ReviewDetailScreen with the current review
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ReviewDetailScreen(review: review),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // User user = _getUserFromReview(review);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => UserProfileScreen(),
-                                    ),
-                                  );
-                                },
-                                child: CircleAvatar(
-                                  radius: 20,
-                                  backgroundImage:
-                                      user!.profilePhotoUrl.isNotEmpty
-                                          ? NetworkImage(user.profilePhotoUrl)
-                                          : null,
-                                  child: user.profilePhotoUrl.isEmpty
-                                      ? Text(user.initials())
-                                      : null,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  review.subject,
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                '${review.rating} Stars',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.amber),
-                                textAlign: TextAlign.right,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(review.content),
-                          // if (topThreeImages.isNotEmpty)
-                          SizedBox(
-                            height: 100, // Adjust the size as needed
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: topThreeImages.length,
-                              itemBuilder: (context, imageIndex) {
-                                return Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.black, // Color of the border
-                                      width: 2, // Width of the border
-                                    ),
-                                    borderRadius: BorderRadius.circular(
-                                        8), // Apply border radius to make the corners rounded (optional)
-                                  ),
-                                  child: Image.network(
-                                    topThreeImages[imageIndex],
-                                    fit: BoxFit.cover,
-                                    width: 100, // Adjust the size as needed
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          // Expanded(
+          //   flex: 60, // 60% of the screen for reviews
+          //   child: ListView.builder(
+          //     itemCount: widget.reviews.length,
+          //     itemBuilder: (context, index) {
+          //       final review = widget.reviews[index];
+          //       // Assuming review has a list of image URLs named 'imageUrls'
+          //       List<String> topThreeImages = review.images.take(3).toList();
+          //       // Debugging the image URL
+          //       print('Image URL: ${topThreeImages[index]}');
+          //       // Access user data using Provider
+          //       final user = Provider.of<UserProvider>(context).user;
+          //       return GestureDetector(
+          //         onTap: () {
+          //           // Navigate to ReviewDetailScreen with the current review
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(
+          //               builder: (context) =>
+          //                   ReviewDetailScreen(review: review),
+          //             ),
+          //           );
+          //         },
+          //         child: _buildReviewCard(context, review),
+          //       );
+          //     },
+          //   ),
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Handle add review button press
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddEditReviewScreen()),
-              );
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddEditReviewScreen()),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _toggleFavorite() {
-    setState(() {
-      widget.place.isFavorite = !widget.place.isFavorite;
-      widget.onFavoriteChanged(widget.place.isFavorite);
-    });
+  Widget _buildReviewCard(BuildContext context, Review review) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    // Navigate to UserProfileScreen with the user ID
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const UserProfileScreen()),
+                    );
+                  },
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.grey, // Default background color
+                    backgroundImage: review.userProfilePhoto.isNotEmpty
+                        ? NetworkImage(review.userProfilePhoto)
+                        : null,
+                    child: review.userProfilePhoto.isEmpty
+                        ? Text(
+                            review.getUserInitials(),
+                            style: const TextStyle(color: Colors.white),
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        review.subject,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (review.images.isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 100, // Fixed height for image carousel/slider
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: review.images.map((imageUrl) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 100, // Fixed width for each image
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons
+                                        .broken_image); // Placeholder for a broken image
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Rating in the top right corner
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 6.0, vertical: 2.0),
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    review.rating.toStringAsFixed(1),
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // Review content
+            const SizedBox(height: 10),
+            Text(review.content),
+          ],
+        ),
+      ),
+    );
   }
+
+  Widget _buildRatingStars(double rating) {
+    List<Widget> stars = [];
+    int fullStars = rating.floor();
+    bool hasHalfStar = (rating - fullStars) >= 0.5;
+
+    for (int i = 0; i < fullStars; i++) {
+      stars.add(const Icon(Icons.star, color: Colors.amber));
+    }
+
+    if (hasHalfStar) {
+      stars.add(const Icon(Icons.star_half, color: Colors.amber));
+    }
+
+    while (stars.length < 5) {
+      stars.add(const Icon(Icons.star_border, color: Colors.amber));
+    }
+
+    return Row(mainAxisSize: MainAxisSize.min, children: stars);
+  }
+
+  // void _toggleFavorite() {
+  //   setState(() {
+  //     widget.place.isFavorite = !widget.place.isFavorite;
+  //     widget.onFavoriteChanged(widget.place.isFavorite);
+  //   });
+  // }
 
   @override
   void dispose() {
-    Navigator.pop(context, places); // Return the updated places list
+    // Navigator.pop(context, places); // Return the updated places list
     super.dispose();
   }
 
@@ -364,5 +436,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
     // To use the custom toast position if needed
     // ...
+  }
+
+  void _onBackPressed() {
+    Navigator.pop(context, places); // Return the updated places list
   }
 }

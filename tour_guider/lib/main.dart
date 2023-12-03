@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'provider/UserProvider.dart'; // Import the UserProvider
+import 'provider/PlaceProvider.dart'; // Import the PlaceProvider
+import 'provider/ReviewProvider.dart'; // Import the ReviewProvider
 import 'views/login_screen.dart'; // Import login screen
 import 'views/registration_screen.dart'; // Import registration screen
 
@@ -14,9 +16,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      // Initialize the Provider
-      create: (context) => UserProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => PlaceProvider()),
+        ChangeNotifierProvider(create: (context) => ReviewProvider()),
+      ],
       child: MaterialApp(
         title: 'Tour-Guider',
         // builder is used here for FToast
@@ -29,9 +34,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.teal,
         ),
-        home: LoginScreen(), // Set the initial route to login screen
+        home: const LoginScreen(), // Set the initial route to login screen
         routes: {
-          '/login': (context) => LoginScreen(),
+          '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegistrationScreen(),
         },
       ),

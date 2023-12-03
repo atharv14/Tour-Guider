@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.tourist_guide_app-mergeDebugResources-19:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.Tour_Guider.app-mergeDebugResources-19:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/res/values-night/styles.xml",
+                    "source": "/Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tour-Guider/Tour-Guider/android/app/src/main/res/values-night/styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

@@ -16,7 +16,7 @@ class PlaceDetailScreen extends StatefulWidget {
 
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
-  late FToast fToast;//Declare FToast instance
+  late FToast fToast;// Declare FToast instance
 
   @override
   void initState() {
@@ -58,58 +58,77 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       ),
       body: Column(
         children: [
+          // Top 40% of the screen for place details
           Expanded(
-            flex: 2, // Adjust the flex to control the size of this section
-            child: Container(
-              padding: EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(widget.place.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                      Column(
-                        children: [
-                          Text('Avg Rating: ${widget.place.averageRating}'),
-                          Text('No of Reviews: ${widget.place.reviewCount}'),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(widget.place.category),
-                      Text(widget.place.timings),
-                      IconButton(
-                        icon: Icon(Icons.favorite),
-                        color: widget.place.isFavorite ? Colors.red : Colors.grey,
-                        onPressed: () {
-                          // Handle favorite toggle
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.location_on),
-                        onPressed: () {
-                          // Handle location press
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.contact_phone),
-                        onPressed: () {
-                          // Handle contact press
-                        },
-                      ),
-                    ],
-                  ),
-                  Text(widget.place.description),
-                  // Add more widgets for other details as per your wireframe
-                ],
+            flex: 4,
+            child: Column(
+              children: [
+              // Image of the place (15% of the total screen)
+              Expanded(
+              flex: 15,
+              child: Image.network(
+                widget.place.imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
               ),
+            ),
+                // Place name, category, and other details (remaining 25% of the top part)
+                Expanded(
+                  flex: 25,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Place name and category
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                widget.place.name,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(widget.place.category),
+                              Text(widget.place.description),
+                            ],
+                          ),
+                        ),
+                        // Ratings, reviews, location, contact, and favorite button
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('Rating: ${widget.place.averageRating}'),
+                            Text('Reviews: ${widget.place.reviewCount}'),
+                            Text('Location: ${widget.place.location}'),
+                            Text('Contact: ${widget.place.contactInfo}'),
+                            Text('Timings: ${widget.place.timings}'),
+                            IconButton(
+                              icon: Icon(
+                                widget.place.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                color: widget.place.isFavorite ? Colors.red : null,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  widget.place.isFavorite = !widget.place.isFavorite;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
-            flex: 3, // Adjust the flex to control the size of the review section
+            flex: 3, // 60% of the screen for reviews
             child: ListView.builder(
               itemCount: widget.reviews.length,
               itemBuilder: (context, index) {

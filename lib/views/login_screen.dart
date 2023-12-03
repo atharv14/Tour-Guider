@@ -3,15 +3,24 @@ import 'registration_screen.dart'; // Import registration screen
 import 'place_list_view.dart'; //Import places view screen
 import '../models/place.dart'; // Import Place model class
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
+  _LoginScreen createState() => _LoginScreen();
+}
+
+class _LoginScreen extends State<LoginScreen> {
+
+  late List<Place> places;
+
+  @override
+  void initState() {
+    super.initState();
     // Create a list of JSON maps
     List<Map<String, dynamic>> placeJson = [
       {
         'id': 'place1',
         'name': 'Place 1',
-        'description': 'Description/category 1.',
+        'description': 'Description 1.',
         'category': 'Attraction',
         'averageRating': 4.2,
         'reviewCount': 150,
@@ -21,21 +30,29 @@ class LoginScreen extends StatelessWidget {
         'imageUrl': 'https://example.com/image_of_place.jpg',
         'isFavorite': false,
       },
-      // Place(
-      //     name: 'Place 2',
-      //     description: 'Description 2',
-      //     averageRating: 4.8,
-      //     reviewCount: 400,
-      //     imageUrl: 'https://example.com/image2.jpg',
-      //     isFavorite: false),
-      // Place(
-      //     name: 'Place 3',
-      //     description: 'Description 3',
-      //     averageRating: 4.5,
-      //     reviewCount: 1000,
-      //     imageUrl: 'https://example.com/image3.jpg',
-      //     isFavorite: true)
     ];
+    places = placeJson.map((json) => Place.fromJson(json)).toList(); // Initialize places in initState
+  }
+
+  Future<void> _navigateAndDisplayPlaces(BuildContext context) async {
+    // Navigate to the PlacesViewScreen and wait for the result
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacesViewScreen(places: places),
+      ),
+    );
+
+    // Update the list of places with the result if not null
+    if (result != null) {
+      setState(() {
+        places = result;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
@@ -59,16 +76,7 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               child: const Text('Login'),
-              onPressed: () {
-                // Implement login logic
-                List<Place> places = placeJson.map((json) => Place.fromJson(json)).toList();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PlacesViewScreen(places: places)
-                  ),
-                );
-              },
+              onPressed: () => _navigateAndDisplayPlaces(context),
             ),
             TextButton(
               child: const Text('Don\'t have an account? Register here!'),

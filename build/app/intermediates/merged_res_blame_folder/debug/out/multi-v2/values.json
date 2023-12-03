@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.tourist_guide_app-mergeDebugResources-19:/values/values.xml",
+            "outputFile": "com.example.Tour_Guider.app-mergeDebugResources-19:/values/values.xml",
             "map": [
                 {
                     "source": "/Users/namitamhatre/.gradle/caches/transforms-3/ee0426ca79724a0bcfc185652d8c9ed4/transformed/lifecycle-runtime-2.6.1/res/values/values.xml",
@@ -18,25 +18,6 @@
                         "startOffsets": "5494",
                         "endColumns": "42",
                         "endOffsets": "5532"
-                    }
-                },
-                {
-                    "source": "/Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tourist Guide App/tourist_guide_app/android/app/src/main/res/values/styles.xml",
-                    "from": {
-                        "startLines": "3,14",
-                        "startColumns": "4,4",
-                        "startOffsets": "173,818",
-                        "endLines": "7,16",
-                        "endColumns": "12,12",
-                        "endOffsets": "476,982"
-                    },
-                    "to": {
-                        "startLines": "108,112",
-                        "startColumns": "4,4",
-                        "startOffsets": "6436,6617",
-                        "endLines": "111,114",
-                        "endColumns": "12,12",
-                        "endOffsets": "6612,6781"
                     }
                 },
                 {
@@ -143,6 +124,25 @@
                         "startOffsets": "5597",
                         "endColumns": "53",
                         "endOffsets": "5646"
+                    }
+                },
+                {
+                    "source": "/Users/namitamhatre/Library/CloudStorage/OneDrive-BinghamtonUniversity/Fall 2023/Obj Orien Design - Design Pattern/Project/tour-guider app/Tour-Guider/Tour-Guider/android/app/src/main/res/values/styles.xml",
+                    "from": {
+                        "startLines": "3,14",
+                        "startColumns": "4,4",
+                        "startOffsets": "173,818",
+                        "endLines": "7,16",
+                        "endColumns": "12,12",
+                        "endOffsets": "476,982"
+                    },
+                    "to": {
+                        "startLines": "108,112",
+                        "startColumns": "4,4",
+                        "startOffsets": "6436,6617",
+                        "endLines": "111,114",
+                        "endColumns": "12,12",
+                        "endOffsets": "6612,6781"
                     }
                 }
             ]

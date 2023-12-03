@@ -11,15 +11,18 @@ class Attraction extends Place {
     required super.id,
     required super.name,
     required super.description,
-    required super.location,
-    super.isFavorite,
-    required OperatingHours operatingHours,
-    required this.parkingAvailable,
-    required this.entryFee,
-    required this.theme,
+    required super.category,
+    required super.averageRating,
+    required super.reviews,
+    required super.address,
+    required super.contactInfo,
+    required super.imageUrl,
+    required super.operatingHours,
     required this.kidFriendly,
-  }) : super(
-    category: PlaceCategory.Attraction,
-    operatingHours: operatingHours,
-  );
+    required this.parkingAvailable,
+    required this.theme,
+    required this.entryFee,
+
+  });
+// JSON conversion methods if needed
 }

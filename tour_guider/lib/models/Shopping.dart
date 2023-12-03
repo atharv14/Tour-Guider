@@ -2,18 +2,20 @@
 import 'place.dart';
 
 class Shopping extends Place {
-  final List<String> brands;
+  List<String> associatedBrands;
 
   Shopping({
     required super.id,
     required super.name,
     required super.description,
-    required super.location,
-    super.isFavorite,
-    required OperatingHours operatingHours,
-    required this.brands,
-  }) : super(
-    category: PlaceCategory.Shopping,
-    operatingHours: operatingHours,
-  );
+    required super.category,
+    required super.averageRating,
+    required super.reviews,
+    required super.address,
+    required super.contactInfo,
+    required super.imageUrl,
+    required super.operatingHours,
+    required this.associatedBrands,
+  });
+// JSON conversion methods if needed
 }

@@ -2,11 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/UserProvider.dart';
 
-class UserProfileScreen extends StatelessWidget {
+class UserProfileScreen extends StatefulWidget {
+  const UserProfileScreen({super.key});
+
+  @override
+  _UserProfileScreenState createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetails();
+  }
+
+  Future<void> _loadUserDetails() async {
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await userProvider.fetchUserDetails();
+    } catch (error) {
+      // Handle any errors here
+      debugPrint('Error loading user details: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
+    // await userProvider.fetchUserDetails();
+
+    if (user == null) {
+      // User data is not available, handle accordingly
+      return Scaffold(
+        appBar: AppBar(title: const Text('User Profile')),
+        body: const Center(child: Text("User data not available")),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -26,11 +58,11 @@ class UserProfileScreen extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: user!.profilePhotoUrl.isNotEmpty
-                  ? NetworkImage(user.profilePhotoUrl)
+              backgroundImage: user!.profilePhotoPath.isNotEmpty
+                  ? NetworkImage(user.profilePhotoPath)
                   : null,
               child:
-                  user.profilePhotoUrl.isEmpty ? Text(user.initials()) : null,
+                  user.profilePhotoPath.isEmpty ? Text(user.initials()) : null,
             ),
             const SizedBox(height: 20),
             Text(user.fullName(), style: const TextStyle(fontSize: 24)),
@@ -56,6 +88,7 @@ class UserProfileScreen extends StatelessWidget {
               children: [
                 const Text('Total Reviews: '),
                 Text(user.totalReviews.toString()),
+                Text('Saved Places Count: ${user?.savedPlaces.length ?? 0}'),
               ],
             ),
           ],

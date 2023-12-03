@@ -10,27 +10,27 @@ class PlacesViewScreen extends StatefulWidget {
 
   PlacesViewScreen({required this.places});
 
-
   @override
   _PlacesViewScreenState createState() => _PlacesViewScreenState();
 }
 
 class _PlacesViewScreenState extends State<PlacesViewScreen> {
 
-  // late List<Place> places;
+  late List<Place> places;
   late FToast fToast;
   bool showFavoritesOnly = false;//Declare FToast instance
 
   @override
   void initState() {
     super.initState();
-    // places = widget.placeJson.map((placeJson) => Place.fromJson(placeJson)).toList();
+    places = widget.places;
     fToast = FToast();
     fToast.init(context); // Initialize FToast with context
   }
 
   @override
   Widget build(BuildContext context) {
+
     List<Map<String, dynamic>> reviewsJson = [
       {
         'id': 'review1',
@@ -168,11 +168,10 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: showFavoritesOnly ? widget.places.where((p) => p.isFavorite).length : widget.places.length,
+              itemCount: showFavoritesOnly ? widget.places.where((p) => p.isFavorite).length : places.length,
               itemBuilder: (context, index) {
                 // Here we filter the places list based on the showFavoritesOnly flag.
-                final placesToShow = showFavoritesOnly ? widget.places.where((p) => p.isFavorite).toList() : widget.places;
-                final place = placesToShow[index];
+                final place = showFavoritesOnly ? places.where((p) => p.isFavorite).toList()[index] : places[index];
                 return Card(
                   // Card decoration and styling
                   child: ListTile(
@@ -209,12 +208,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                     trailing: IconButton(
                       icon: Icon(place.isFavorite ? Icons.favorite : Icons.favorite_border),
                       color: place.isFavorite ? Colors.red : null,
-                      onPressed: () {
-                        setState(() {
-                          // Toggle favorite status
-                          place.isFavorite = !place.isFavorite;
-                        });
-                      },
+                      onPressed: () => _toggleFavorite(place.id),
                     ),
                   ),
                 );
@@ -224,6 +218,21 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
         ],
       ),
     );
+  }
+
+  void _toggleFavorite(String placeId) {
+    setState(() {
+      final placeIndex = places.indexWhere((place) => place.id == placeId);
+      if (placeIndex != -1) {
+        places[placeIndex].isFavorite = !places[placeIndex].isFavorite;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    Navigator.pop(context, places); // Return the updated places list
+    super.dispose();
   }
 
   void _showToast() {
