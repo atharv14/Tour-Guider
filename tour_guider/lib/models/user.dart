@@ -1,5 +1,9 @@
 
-import 'place.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:tour_guider/models/place.dart';
+
+import 'review.dart';
 
 class User {
   String id;
@@ -9,11 +13,10 @@ class User {
   String email;
   String? password;
   String bio;
-  String profilePhotoPath;
-  // Todo: len function on reviews
-  String totalReviews;
-  List<String> savedPlaces;
-  bool isAdmin;
+  String? profilePhotoPath;
+  List<Review>? reviews;
+  List<Place>? savedPlaces;
+  bool? isAdmin;
 
   User({
     required this.id,
@@ -23,9 +26,9 @@ class User {
     required this.email,
     required this.password,
     required this.bio,
-    this.profilePhotoPath = '',
-    this.totalReviews = '',
-    this.savedPlaces = const [],
+    this.profilePhotoPath,
+    this.reviews,
+    this.savedPlaces,
     this.isAdmin = false,
   });
 
@@ -38,8 +41,8 @@ class User {
     String? password,
     String? bio,
     String? profilePhotoPath,
-    String? totalReviews,
-    List<String>? savedPlaces,
+    List<Review>? reviews,
+    List<Place>? savedPlaces,
     bool? isAdmin,
   }) {
     return User(
@@ -51,7 +54,7 @@ class User {
       password: password ?? this.password,
       bio: bio ?? this.bio,
       profilePhotoPath: profilePhotoPath ?? this.profilePhotoPath,
-      totalReviews: totalReviews ?? this.totalReviews,
+      reviews: reviews ?? this.reviews,
       savedPlaces: savedPlaces ?? this.savedPlaces,
       isAdmin: isAdmin ?? this.isAdmin,
     );
@@ -59,20 +62,27 @@ class User {
 
   // Factory method to create a User from a map (e.g., JSON)
   factory User.fromJson(Map<String, dynamic> json) {
+    debugPrint('photo: ${json['photo']}'); // This should print a Map or null
+    debugPrint('photo path: ${json['photo']?['path']}'); // This should print a String or null
     return User(
-      id: json['id'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      userName: json['userName'],
-      email: json['email'],
-      password: json['password'],
-      bio: json['bio'],
-      profilePhotoPath: json['photo']?['path'] ?? '',
-      totalReviews: json['totalReviews'] ?? '',
-      savedPlaces: List<String>.from(json['savedPlaces'] ?? []),
+      id: json['id'] ?? '',
+      firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
+      userName: json['username'] ?? '', // Changed from 'userName' to 'username' to match your JSON
+      email: json['email'] ?? '',
+      password: json['password'], // Nullable, no need for a default value
+      bio: json['bio'] ?? '',
+      profilePhotoPath: json['photo'] != null ? json['photo']['path'] : null,
+      reviews: json['reviews'] != null
+          ? List<Review>.from(json['reviews'].map((x) => Review.fromJson(x)))
+          : null,
+      savedPlaces: json['savedPlaces'] != null
+          ? List<Place>.from(json['savedPlaces'].map((x) => Place.fromJson(x)))
+          : null,
       isAdmin: json['userRole'] == 'ADMIN',
     );
   }
+
 
   // Method to convert User to a map (e.g., for JSON)
   Map<String, dynamic> toJson() {
@@ -80,14 +90,14 @@ class User {
       'id': id,
       'firstName': firstName,
       'lastName': lastName,
-      'userName': userName,
+      'username': userName,
       'email': email,
       'password': password,
       'bio': bio,
-      'photo': {'path': profilePhotoPath},
-      'totalReviews': totalReviews,
+      'photo': profilePhotoPath,
+      'reviews': reviews,
       'savedPlaces': savedPlaces,
-      'userRole': isAdmin ? 'ADMIN' : 'USER',
+      'userRole': isAdmin ,
     };
   }
 
@@ -101,7 +111,10 @@ class User {
 
   // Clear the password after use
   void clearPassword() {
-    password = null;
+    password =  null;
   }
+
+  // Getter for totalReviews
+  int? get totalReviews => reviews?.length;
 
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:tour_guider/views/review_detail_screen.dart';
+import '../models/user.dart';
+import '../provider/PlaceProvider.dart';
 //
 import '../models/place.dart'; //
 import '../models/review.dart'; //
@@ -10,16 +13,19 @@ import 'add_edit_review_screen.dart';
 import 'login_screen.dart'; // Import login screen
 import 'place_list_view.dart'; //Import places view screen
 import 'user_profile_screen.dart'; // Import User Profile screen
-import 'review_detail_screen.dart'; // Import Review view Screen
+// Import Review view Screen
 
 class PlaceDetailScreen extends StatefulWidget {
-  final Place place;
-  final Function(bool) onFavoriteChanged;
+  final String placeId;
+  final VoidCallback onBack;
 
-  const PlaceDetailScreen(
-      {super.key,
-      required this.place,
-      required this.onFavoriteChanged});
+  // final Function(bool) onFavoriteChanged;
+
+  const PlaceDetailScreen({
+    Key? key,
+    required this.placeId,
+    required this.onBack,
+  }) : super(key: key);
 
   @override
   _PlaceDetailScreenState createState() => _PlaceDetailScreenState();
@@ -27,39 +33,46 @@ class PlaceDetailScreen extends StatefulWidget {
 
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   late FToast fToast; // Declare FToast instance
-  late List<Place> places;
-  bool showFavoritesOnly = false;
-  String selectedSortOption = 'New to Old';
-
-  var isAdmin = true; // Default sort option
+  late Future<Place?> _placeFuture;
+  late Future<List<Review>> _reviewsFuture;
+  // bool showFavoritesOnly = false;
+  String selectedSortOption = 'New to Old'; // Default sort option
+  // var isAdmin = true;
 
   @override
   void initState() {
     super.initState();
-    // places = widget.places;
     fToast = FToast();
     fToast.init(context); // Initialize FToast with context
-    // Future.microtask(() =>
-    //     Provider.of<ReviewProvider>(context, listen: false)
-    //         .fetchReviewsForPlace(widget.place.id));
+    final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
+    _placeFuture = placeProvider.fetchPlaceById(widget.placeId);
+    final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
+    _reviewsFuture = reviewProvider.fetchReviewsForPlace(widget.placeId);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    // Access ReviewProvider to get the list of reviews
-    List<Review> reviews = Provider.of<ReviewProvider>(context).reviews;
     // Access user data using Provider
+    // final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
+    final reviewProvider = Provider.of<ReviewProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
-    final bool isFavorite = userProvider.user?.savedPlaces.contains(widget.place.id) ?? false;
-    // final bool isAdmin = user?.isAdmin ?? true;
+    final bool isFavorite = userProvider.user?.savedPlaces
+            ?.any((place) => place.id == widget.placeId) ??
+        false;
+
+    final bool isAdmin = userProvider.user?.isAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Place Details'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: _onBackPressed, // Call this when back button is pressed
+          onPressed: () {
+            widget.onBack(); // Notify PlacesViewScreen to re-fetch places
+            Navigator.pop(context); // Navigate back
+          },
         ),
-        title: Text(widget.place.name),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.home),
@@ -93,187 +106,87 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             icon: const Icon(Icons.logout),
             onPressed: () {
               // Handle logout
-              _showToast();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
+              _handleLogout(context);
             },
             tooltip: 'Logout',
           ),
           if (isAdmin)
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  //ToDo Handle Place Settings
-
-                },
-                tooltip: 'Edit the place',
-              ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                //ToDo Handle Place Settings
+              },
+              tooltip: 'Edit the place',
+            ),
         ],
       ),
-      body: Column(
-        children: [
-          // Top 40% of the screen for place details
-          Expanded(
-            flex: 40,
-            child: Column(
-              children: [
-                // Image of the place (15% of the total screen)
-                Stack(
-                  alignment: Alignment.topRight,
+      body: FutureBuilder<Place?>(
+        future: _placeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+
+          if (!snapshot.hasData) {
+            return const Text('Place not found');
+          }
+
+          final place = snapshot.data!;
+          final bool isFavorite =
+              userProvider.user?.savedPlaces?.contains(place.id) ?? false;
+
+          return Column(
+            children: [
+              // Top 40% of the screen for place detail screen
+              Expanded(
+                  child: _buildPlaceDetails(place, isFavorite, userProvider)),
+              // Filter section for sorting reviews
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Image with horizontal scroll
-                    SizedBox(
-                      height: 100, // Adjust as needed
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: widget.place.imageUrl
-                            .length, // Assuming Place has a list of image URLs
-                        itemBuilder: (context, imageIndex) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.network(
-                              widget.place
-                                  .imageUrl[imageIndex], // Use each image URL
-                              fit: BoxFit.cover,
-                              width: 100, // Adjust as needed
-                              errorBuilder: (context, error, stackTrace) {
-                                // Return an error widget here if the image fails to load
-                                return const Icon(Icons
-                                    .broken_image); // Placeholder for a broken image
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.black,
-                      ),
-                      onPressed: () async {
-                        bool success = await userProvider.savePlaceForUser(widget.place.id);
-                        if (success) {
-                          await userProvider.updateFavoriteStatus(widget.place.id, !isFavorite);
-                          setState(() {});
-                        } else {
-                          // Handle failure (e.g., show a message)
-                        }
-                      }, // Updated to call the local method
+                    const Text('Sort by: '),
+                    DropdownButton<String>(
+                      value: selectedSortOption,
+                      items: <String>['New to Old', 'Recent', 'Relevant']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedSortOption = newValue!;
+                        });
+                        // Implement sorting logic here
+                      },
                     ),
                   ],
                 ),
-                // Place name, category, and other details (remaining 25% of the top part)
-                Expanded(
-                  flex: 25,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Place name and category
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                widget.place.name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(widget.place.category),
-                              Text(widget.place.description),
-                            ],
-                          ),
-                        ),
-                        // Ratings, reviews, location, contact, and favorite button
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text('Rating: ${widget.place.averageRating}'),
-                            Text('Reviews: ${widget.place.totalReviews}'),
-                            Text('Location: ${widget.place.location}'),
-                            Text('Contact: ${widget.place.contactInfo}'),
-                            Text('Operating Hours: ${widget.place.operatingHours}'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
 
-          // Filter section for sorting reviews
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text('Sort by: '),
-                DropdownButton<String>(
-                  value: selectedSortOption,
-                  items: <String>['New to Old', 'Recent', 'Relevant']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedSortOption = newValue!;
-                    });
-                    // Implement sorting logic here
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // reviews
-          // Expanded(
-          //   flex: 60, // 60% of the screen for reviews
-          //   child: ListView.builder(
-          //     itemCount: widget.reviews.length,
-          //     itemBuilder: (context, index) {
-          //       final review = widget.reviews[index];
-          //       // Assuming review has a list of image URLs named 'imageUrls'
-          //       List<String> topThreeImages = review.images.take(3).toList();
-          //       // Debugging the image URL
-          //       print('Image URL: ${topThreeImages[index]}');
-          //       // Access user data using Provider
-          //       final user = Provider.of<UserProvider>(context).user;
-          //       return GestureDetector(
-          //         onTap: () {
-          //           // Navigate to ReviewDetailScreen with the current review
-          //           Navigator.push(
-          //             context,
-          //             MaterialPageRoute(
-          //               builder: (context) =>
-          //                   ReviewDetailScreen(review: review),
-          //             ),
-          //           );
-          //         },
-          //         child: _buildReviewCard(context, review),
-          //       );
-          //     },
-          //   ),
-          // ),
-        ],
+              // Bottom 60% of the screen for review section
+              Expanded(
+                child: _buildReviewsSection(widget.placeId),
+              ),
+            ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Handle add review button press
+          // Navigate to AddEditReviewScreen with 'null' indicating a new review
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddEditReviewScreen()),
+            MaterialPageRoute(
+              builder: (context) => AddEditReviewScreen(review: null, placeId: widget.placeId,),
+            ),
           );
         },
         child: const Icon(Icons.add),
@@ -281,106 +194,299 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Widget _buildReviewCard(BuildContext context, Review review) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // Navigate to UserProfileScreen with the user ID
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UserProfileScreen()),
+  Widget _buildPlaceDetails(
+      Place place, bool isFavorite, UserProvider userProvider) {
+    return Column(
+      children: [
+        Expanded(
+          flex: 15,
+          // Image of the place (15% of the total screen)
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              // Image with horizontal scroll
+              SizedBox(
+                height: 100, // Adjust as needed
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: place.imageUrl?.length ??
+                      0, // Assuming Place has a list of image URLs
+                  itemBuilder: (context, imageIndex) {
+                    // Check if imageUrl is not null before accessing it
+                    final image = place.imageUrl?[imageIndex];
+                    if (image != null) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Image.network(
+                          image,
+                          fit: BoxFit.cover,
+                          width: 100, // Adjust as needed
+                          errorBuilder: (context, error, stackTrace) {
+                            // Return an error widget here if the image fails to load
+                            return const Icon(Icons
+                                .broken_image); // Placeholder for a broken image
+                          },
+                        ),
+                      );
+                    } else {
+                      // Handle the case where imageUrl is null
+                      return const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons
+                            .image_not_supported), // Placeholder for no image
+                      );
+                    }
+                  },
+                ),
+              ),
+              // Favorite icon button
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Selector<UserProvider, bool>(
+                  selector: (_, userProvider) =>
+                      userProvider.isFavoritePlace(place.id),
+                  builder: (context, isFavorite, child) {
+                    return IconButton(
+                      icon: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.grey,
+                      ),
+                      onPressed: () {
+                        userProvider.toggleFavoriteStatus(place).then((_) {
+                          // No need to call setState() if using provider correctly.
+                        });
+                      },
+                      tooltip: 'Add or Remove From Favorite',
                     );
                   },
-                  child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.grey, // Default background color
-                    backgroundImage: review.userProfilePhoto.isNotEmpty
-                        ? NetworkImage(review.userProfilePhoto)
-                        : null,
-                    child: review.userProfilePhoto.isEmpty
-                        ? Text(
-                            review.getUserInitials(),
-                            style: const TextStyle(color: Colors.white),
-                          )
-                        : null,
-                  ),
                 ),
-                const SizedBox(width: 10),
+              ),
+            ],
+          ),
+        ),
+        // Place name, category, and other details (remaining 25% of the top part)
+        Expanded(
+          flex: 25,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        review.subject,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (review.images.isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 100, // Fixed height for image carousel/slider
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: review.images.map((imageUrl) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Image.network(
-                                  imageUrl,
-                                  width: 100, // Fixed width for each image
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons
-                                        .broken_image); // Placeholder for a broken image
-                                  },
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
+                      Text(place.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(place.category,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(place.description),
+                      Text('Location: ${place.location}'),
+                      Text('Contact: ${place.formattedContactInfo}'),
                     ],
                   ),
                 ),
-                // Rating in the top right corner
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 6.0, vertical: 2.0),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    review.rating.toStringAsFixed(1),
-                    style: const TextStyle(
-                      color: Colors.black,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildRatingStars(place.averageRating),
+                    const SizedBox(height: 4),
+                    Text(
+                      place.averageRating != null
+                          ? place.averageRating!.toStringAsFixed(1)
+                          : 'N/A',
                     ),
-                  ),
+                    Text('${place.totalReviews} Reviews'),
+                    // Wrap the timings Text widget in an Expanded to prevent overflow
+                    Expanded(
+                      child: Text(
+                        'Timings: \n${place.formattedOperatingHours}',
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis, // Add an ellipsis when the text overflows
+                      ),
+                    ),
+
+                  ],
                 ),
               ],
             ),
-            // Review content
-            const SizedBox(height: 10),
-            Text(review.content),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildRatingStars(double rating) {
+  Widget _buildReviewsSection(String placeId) {
+    // final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
+
+    return Column(
+      children: [
+      Expanded(
+        flex: 60, // 60% of the screen for reviews
+        child: FutureBuilder<List<Review>>(
+          future: _reviewsFuture,
+          builder: (context, snapshot) {
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   return const Center(child: CircularProgressIndicator());
+            // }
+
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
+              return const Center(child: Text('No reviews found'));
+            }
+
+            final reviews = snapshot.data!;
+            return ListView.builder(
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                return _buildReviewCard(context, reviews[index]);
+              },
+            );
+          },
+        ),
+      ),
+    ],
+    );
+  }
+
+  Widget _buildReviewCard(BuildContext context, Review review) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // Fetch user details once when creating the review card
+    final Future<User?> _reviewAuthorFuture = userProvider.fetchUserById(review.userId);
+
+    return FutureBuilder<User?>(
+      future: _reviewAuthorFuture,
+      builder: (context, userSnapshot) {
+        if (userSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (userSnapshot.hasError || !userSnapshot.hasData) {
+          return const Center(child: Text('Error fetching user'));
+        }
+
+        final reviewAuthor = userSnapshot.data!;
+
+        return GestureDetector(
+          onTap: () {
+            // Navigate to ReviewDetailScreen with the current review
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReviewDetailScreen(review: review),
+              ),
+            );
+          },
+          child: Card(
+            margin: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Profile photo and subject column
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: Colors.grey, // Default background color
+                              backgroundImage: reviewAuthor.profilePhotoPath?.isNotEmpty == true
+                                  ? NetworkImage(reviewAuthor.profilePhotoPath!)
+                                  : null,
+                              child: reviewAuthor.profilePhotoPath == null ||
+                                  reviewAuthor.profilePhotoPath!.isEmpty
+                                  ? Text(
+                                reviewAuthor.initials(),
+                                style: const TextStyle(color: Colors.white),
+                              )
+                                  : null,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              review.subject,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Ratings column
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _buildRatingStars(review.rating),
+                          Text(
+                            review.rating.toStringAsFixed(1),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Review content
+                  Text(
+                    review.content,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Horizontal row for review photos
+                  if (review.photos != null && review.photos!.isNotEmpty) ...[
+                    SizedBox(
+                      height: 100, // Fixed height for image carousel/slider
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: review.photos!.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Image.network(
+                              review.photos![index],
+                              width: 100, // Fixed width for each image
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.broken_image); // Placeholder for a broken image
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ] else ... [
+                    const Text('No photos'), // Displayed if there are no photos
+                  ],
+                ],
+              )
+
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRatingStars(double? rating) {
+    if (rating == null) {
+      // Return a widget or an empty container if rating is null
+      // return const Text('No rating');
+      // Or, return an empty container for showing nothing
+      return Container();
+    }
     List<Widget> stars = [];
-    int fullStars = rating.floor();
+    int? fullStars = rating.floor();
     bool hasHalfStar = (rating - fullStars) >= 0.5;
 
     for (int i = 0; i < fullStars; i++) {
@@ -398,6 +504,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     return Row(mainAxisSize: MainAxisSize.min, children: stars);
   }
 
+  void _handleLogout(BuildContext context) {
+    _showToast('Successfully Logged out.', Colors.redAccent);
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (Route<dynamic> route) => false, // This predicate ensures all previous routes are removed
+    );
+  }
+
+
   // void _toggleFavorite() {
   //   setState(() {
   //     widget.place.isFavorite = !widget.place.isFavorite;
@@ -411,34 +528,67 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     super.dispose();
   }
 
-  void _showToast() {
-    Widget toast = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.0),
-        color: Colors.redAccent,
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.check),
-          SizedBox(width: 12.0),
-          Text("Successfully Logged out."),
-        ],
-      ),
+  // List<Widget> _buildAppBarActions(bool isAdmin) {
+  //   return [
+  //     IconButton(
+  //       icon: const Icon(Icons.home),
+  //       onPressed: () {
+  //         Navigator.pushAndRemoveUntil(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const PlacesViewScreen()),
+  //           ModalRoute.withName('/'),
+  //         );
+  //       },
+  //       tooltip: 'Home',
+  //     ),
+  //     IconButton(
+  //       icon: const Icon(Icons.account_circle),
+  //       onPressed: () {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+  //         );
+  //       },
+  //       tooltip: 'User Profile',
+  //     ),
+  //     IconButton(
+  //       icon: const Icon(Icons.logout),
+  //       onPressed: () => _handleLogout(),
+  //       tooltip: 'Logout',
+  //     ),
+  //     if (isAdmin)
+  //       IconButton(
+  //         icon: const Icon(Icons.settings),
+  //         onPressed: () {
+  //           // TODO: Handle Place Settings
+  //         },
+  //         tooltip: 'Edit the place',
+  //       ),
+  //   ];
+  // }
+
+  void _showToast(String message, Color color) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fToast.showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: color,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check),
+              const SizedBox(width: 12.0),
+              Text(message),
+            ],
+          ),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 5),
+      );
+    }
     );
-
-    fToast.showToast(
-      child: toast,
-      gravity: ToastGravity.BOTTOM,
-      toastDuration: const Duration(seconds: 5),
-    );
-
-    // To use the custom toast position if needed
-    // ...
-  }
-
-  void _onBackPressed() {
-    Navigator.pop(context, places); // Return the updated places list
   }
 }

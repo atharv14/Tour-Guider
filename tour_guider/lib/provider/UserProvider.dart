@@ -4,30 +4,89 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../models/place.dart';
 import '../models/user.dart';
 
 class UserProvider with ChangeNotifier {
   User? _user;
+  User? _loggedInUser;
   List<User> _allUsers = [];
+  Map<String, User> _usersCache = {};
+  List<String> get favoritePlaceIds => _user?.savedPlaces?.map((place) => place.id).toList() ?? [];
+  ImageProvider? _profileImage;
+
+
   // 192.168.1.230
-  String authUrl = 'http://192.168.1.230:8080/api/v1/auth';
-  String photoUrl = 'http://192.168.1.230:8080/api/v1';
-  String baseUrl = 'http://192.168.1.230:8080/api/v1/users';
-  final String userDetailUrl = 'http://192.168.1.230:8080/api/v1/users/loggedInUser';
+  String authUrl = 'http://192.168.1.234:8080/api/v1/auth';
+  String photoUrl = 'http://192.168.1.234:8080/api/v1';
+  String baseUrl = 'http://192.168.1.234:8080/api/v1/users';
+  final String userDetailUrl = 'http://192.168.1.234:8080/api/v1/users/loggedInUser';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-
-
-  // String AuthToken = '';
 
   User? get user => _user;
   List<User> get allUsers => List.unmodifiable(_allUsers);
+  Map<String, User> get usersCache => _usersCache;
+  ImageProvider? get profileImage => _profileImage;
+
 
   void setUser(User newUser) {
     _user = newUser;
     notifyListeners();
   }
 
+  Future<void> downloadImage(String photoPath) async {
+    try {
+      String? authToken = await _secureStorage.read(key: 'authToken');
+      final url = Uri.parse('$photoUrl/photos/fetch?photoPath=$photoPath');
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          // other headers if needed
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _profileImage = MemoryImage(response.bodyBytes);
+        notifyListeners();
+      } else {
+        debugPrint("Failed to fetch photo: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Exception in fetching photo: $e");
+    }
+  }
+
+  // Future<User?> fetchUserForReview(String userId) async {
+  //   // Assuming UserProvider is accessible
+  //   return Provider.of<UserProvider>(context, listen: false).fetchUserById(userId);
+  // }
+  //
+  // Future<void> fetchReviewsForPlace(String placeId) async {
+  //   final url = Uri.parse('$baseUrl/place/$placeId');
+  //   String? authToken = await _secureStorage.read(key: 'authToken');
+  //
+  //   try {
+  //     final response = await http.get(url, headers: {
+  //       'Authorization': 'Bearer $authToken',
+  //       // 'Content-Type': 'application/json',
+  //     });
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> reviewJson = json.decode(response.body);
+  //       _reviews = reviewJson.map((json) => Review.fromJson(json)).toList();
+  //       notifyListeners();
+  //     } else {
+  //       debugPrint("Error getting response: ${response.body}");
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Failed to fetch reviews for the place: $e");
+  //   }
+  // }
+
   // Fetch logged in user
+
+  // loggedIn User
   Future<void> fetchUserDetails() async {
     try {
       final url = Uri.parse(userDetailUrl);
@@ -41,6 +100,8 @@ class UserProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         Map<String, dynamic> userJson = json.decode(response.body);
         _user = User.fromJson(userJson);
+        _loggedInUser = _user;
+        notifyListeners();
       } else {
         // Handle non-200 responses
         debugPrint("Failed to fetch logged in user: ${response.body}");
@@ -49,7 +110,6 @@ class UserProvider with ChangeNotifier {
       // Handle network error
       debugPrint("Exception in retrieving user details: $error");
     }
-    notifyListeners();
   }
 
   //Todo
@@ -83,16 +143,13 @@ class UserProvider with ChangeNotifier {
 
   //Todo
   // Save places for the current user
-  Future<bool> savePlaceForUser(String placeId) async {
+  Future<bool> savePlaceForUser(Place placeId) async {
     String? authToken = await _secureStorage.read(key: 'authToken');
-    if (authToken == null) {
-      debugPrint('authToken is null: $authToken');
-      return false;
-    }
+    if (authToken == null) return false;
 
     try {
       final response = await http.put(
-        Uri.parse('$baseUrl/$placeId'),
+        Uri.parse('$baseUrl/place/$placeId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken',
@@ -100,52 +157,133 @@ class UserProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 204) {
-        // You can update the user's saved places in the local state if needed
+        // Assuming _user is your User object
+        _user?.savedPlaces?.add(placeId);
+        notifyListeners(); // Notifies listeners about the change.
         return true;
       } else {
-        // Handle non-200 responses
-        debugPrint('Failed to save place: ${response.body}');
+        // Handle error
+        debugPrint('Error saving place: ${response.body}');
         return false;
       }
     } catch (error) {
-      // Handle network error, throw exception or log it
       debugPrint('Error saving place: $error');
       return false;
     }
   }
 
-  Future<bool> updateFavoriteStatus(String placeId, bool isFavorite) async {
-    if (_user == null) return false;
+  bool isFavoritePlace(String placeId) {
+    return _user?.savedPlaces?.any((place) => place.id == placeId) ?? false;
+  }
+
+  Future<bool> toggleFavoriteStatus(Place place) async {
+    String? authToken = await _secureStorage.read(key: 'authToken');
+    if (authToken == null) return false;
+
+    try {
+      // Check if the place is already a favorite
+      bool isFavorite = _user?.savedPlaces?.any((savedPlace) => savedPlace.id == place.id) ?? false;
+
+      final response = await http.put(
+        Uri.parse('$baseUrl/place/${place.id}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: json.encode({'isFavorite': !isFavorite}), // Toggle the favorite status
+      );
+
+      if (response.statusCode == 204) {
+        // Update the local user object
+        if (isFavorite) {
+          _user?.savedPlaces?.removeWhere((savedPlace) => savedPlace.id == place.id);
+        } else {
+          _user?.savedPlaces?.add(place);
+        }
+        notifyListeners(); // Notifies listeners about the change
+        return true;
+      } else {
+        // Handle error
+        debugPrint('Error toggling favorite status: ${response.body}');
+        return false;
+      }
+    } catch (error) {
+      debugPrint('Error toggling favorite status: $error');
+      return false;
+    }
+  }
+
+  Future<void> updateFavoriteStatus(Place placeId, bool isFavorite) async {
+    if (_user == null) return;
+
+    // Initialize savedPlaces if it's null
+    _user!.savedPlaces ??= [];
 
     if (isFavorite) {
-      if (!_user!.savedPlaces.contains(placeId)) {
-        _user!.savedPlaces.add(placeId);
+      if (!_user!.savedPlaces!.contains(placeId)) {
+        _user!.savedPlaces!.add(placeId);
       }
     } else {
-      _user!.savedPlaces.remove(placeId);
+      _user!.savedPlaces!.remove(placeId);
     }
-
     notifyListeners();
-    return true;
   }
+
+  // Method to remove a place from the user's saved places
+  Future<bool> removePlaceFromUser(Place place) async {
+    String? authToken = await _secureStorage.read(key: 'authToken');
+    if (authToken == null) return false;
+
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/place/${place.id}'), // Use DELETE method
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        // Remove the place from the _user's saved places list
+        _user?.savedPlaces?.removeWhere((p) => p.id == place.id);
+        notifyListeners(); // Notify listeners about the change
+        return true;
+      } else {
+        // Handle error
+        debugPrint('Error removing place: ${response.body}');
+        return false;
+      }
+    } catch (error) {
+      debugPrint('Error removing place: $error');
+      return false;
+    }
+  }
+
 
   // Todo
   // Fetch a user by ID
-  Future<void> fetchUserById(String userId) async {
+  Future<User?> fetchUserById(String userId) async {
+    // if (_usersCache.containsKey(userId)) {
+    //   return _usersCache[userId];
+    // }
     final url = Uri.parse('$baseUrl/$userId');
     String? authToken = await _secureStorage.read(key: 'authToken');
 
     try {
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $authToken', // Uncomment and replace token-based auth
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
       });
 
       if (response.statusCode == 200) {
+        debugPrint("User JSON Response: ${response.body}");
         final userJson = json.decode(response.body);
-        _user = User.fromJson(
-            userJson); // Assuming User.fromJson is a constructor that initializes a User object from a JSON map
-        notifyListeners();
+        debugPrint("Decoded JSON: $userJson"); // Additional debugging print
+        //
+        User fetchedUser = User.fromJson(userJson); // Assuming User.fromJson is a constructor that initializes a User object from a JSON map
+        _usersCache[userId] = fetchedUser;
+        // notifyListeners();
+        return fetchedUser;
       } else {
         // Handle non-200 responses
         debugPrint('Failed to fetch user: ${response.body}');
@@ -154,10 +292,11 @@ class UserProvider with ChangeNotifier {
       // Handle network error, throw exception or log it
       debugPrint('Error fetching user: $error');
     }
+    return null;
   }
 
   // register user
-  Future<void> register(User newUser, File? imageFile) async {
+  Future<bool> register(User newUser, File? imageFile) async {
     // Call API to register the user
     final registerUrl = Uri.parse('$authUrl/signup');
     // await _secureStorage.deleteAll();
@@ -180,21 +319,22 @@ class UserProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
+        bool isAdmin = responseData['admin'];
         // Assuming the response contains 'token' and 'userRole'
         String authToken = responseData['authToken'];
         await _secureStorage.write(key: 'authToken', value: authToken);
-        // bool userRole = responseData['admin'];
+        await _secureStorage.write(key: 'admin', value: isAdmin.toString());
 
         // Update the user with the received data
         _user = newUser.copyWith(
-          id: responseData['userId'],
-          // userRole: userRole,
+          isAdmin: responseData['admin'],
         );
         notifyListeners();
 
         // If an image file is provided, upload it
         if (imageFile != null) {
           await uploadImage(imageFile, _user!.id);
+          debugPrint("ImageUploaded");
         } else {debugPrint("Image is null");}
       } else {
         debugPrint("Error in user registration: ${response.body}");
@@ -202,6 +342,7 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       debugPrint("Exception in registering user: $e");
     }
+    return true;
   }
 
 
@@ -214,31 +355,23 @@ class UserProvider with ChangeNotifier {
       );
 
       // Add file to the request
-      var picture = await http.MultipartFile.fromPath('uploadProfilePhoto', image.path);
+      var picture = await http.MultipartFile.fromPath('file', image.path);
       request.files.add(picture);
+
+      // request.addFilePart('file', im)
 
       // Add userId as a field if needed
       request.fields['userId'] = userId;
 
       // Read authToken from secure storage and add it to request header
       String? authToken = await _secureStorage.read(key: 'authToken');
-      if (authToken != null) {
-        request.headers['Authorization'] = 'Bearer $authToken';
-      }
+      request.headers['Authorization'] = 'Bearer $authToken';
 
       // Send the request
       var response = await request.send();
 
       // Handle the response
-      if (response.statusCode == 200) {
-        var responseData = await response.stream.toBytes();
-        var result = json.decode(utf8.decode(responseData));
-
-        // Assuming the response contains the photo path
-        var updatedPhotoUrl = result['photo']; // Adjust the key according to actual response
-        _user?.profilePhotoPath = updatedPhotoUrl;
-        notifyListeners();
-      } else {
+      if (response.statusCode != 200) {
         var responseBody = await response.stream.bytesToString();
         debugPrint("Error uploading image: $responseBody");
       }
@@ -265,6 +398,7 @@ class UserProvider with ChangeNotifier {
         bool isAdmin = responseData['admin'];
         await _secureStorage.write(key: 'authToken', value: authToken);
         await _secureStorage.write(key: 'admin', value: isAdmin.toString());
+        await fetchUserDetails(); // Fetch user details after login
 
         // Update _user with the fetched user data, including admin status
         _user?.isAdmin = isAdmin;

@@ -8,13 +8,17 @@ import '../models/place.dart';
 class PlaceProvider with ChangeNotifier {
   List<Place> _places = [];
   List<Place> _filteredPlaces = [];
-  List<Place> _favoritePlaces = [];
+  List<Place> _searchResults = []; // Add this line
 
+
+  // List<Place> get allPlaces => _places;
   List<Place> get places => _filteredPlaces;
+  List<Place> get searchResults => _searchResults; // Add this getter
 
-  String baseUrl = 'http://192.168.1.230:8080/api/v1/places';
+
+  String baseUrl = 'http://192.168.1.234:8080/api/v1/places';
   final String favoritePlaceUrl =
-      'http://192.168.1.230:8080/api/v1/users/place';
+      'http://192.168.1.234:8080/api/v1/users/place';
 
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
@@ -30,6 +34,7 @@ class PlaceProvider with ChangeNotifier {
 
 // Add more methods as needed for updating and fetching places
 
+  // Fetch all places
   Future<void> fetchPlaces() async {
     final url = Uri.parse(baseUrl);
     String? authToken = await _secureStorage.read(key: 'authToken');
@@ -43,7 +48,7 @@ class PlaceProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         List<dynamic> placesJson = json.decode(response.body);
         _places = placesJson.map((json) => Place.fromJson(json)).toList();
-        notifyListeners();
+        // notifyListeners();
         _filteredPlaces = _places;
         notifyListeners();
       } else {
@@ -57,37 +62,34 @@ class PlaceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void filterPlacesByCategory(String category) {
-    if (category == 'All') {
-      _filteredPlaces = _places;
-    } else {
-      _filteredPlaces =
-          _places.where((place) => place.category == category).toList();
-    }
+  void filterFavoritePlaces(List<String> favoritePlaceIds) {
+    _filteredPlaces = _places.where((place) => favoritePlaceIds.contains(place.id)).toList();
     notifyListeners();
   }
 
-  // Future<void> fetchFavoritePlaces(List<String> favoritePlaceIds) async {
-  //   String? authToken = await _secureStorage.read(key: 'authToken');
-  //   if (authToken == null) return;
-  //
-  //   _favoritePlaces = [];
-  //   for (var placeId in favoritePlaceIds) {
-  //     try {
-  //       final response = await http.get(
-  //         Uri.parse('$favoritePlaceUrl/$placeId'),
-  //         headers: {'Authorization': 'Bearer $authToken'},
-  //       );
-  //       if (response.statusCode == 200) {
-  //         Map<String, dynamic> placeJson = json.decode(response.body);
-  //         _favoritePlaces.add(Place.fromJson(placeJson));
-  //       }
-  //     } catch (error) {
-  //       debugPrint('Error fetching favorite place: $error');
-  //     }
-  //   }
-  //   notifyListeners();
-  // }
+  Future<Place?> fetchPlaceById(String placeId) async {
+    final url = Uri.parse('$baseUrl/$placeId');
+    String? authToken = await _secureStorage.read(key: 'authToken');
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $authToken',
+        // 'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        return Place.fromJson(json.decode(response.body));
+      } else {
+        // Handle non-200 responses
+        debugPrint('Failed to fetch place: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      // Handle network error, throw exception or log it
+      debugPrint('Error fetching place: $e');
+      return null;
+    }
+  }
 
   Future<void> searchPlaces(String query) async {
     try {
@@ -101,6 +103,8 @@ class PlaceProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         List<dynamic> placesJson = json.decode(response.body);
         _places = placesJson.map((json) => Place.fromJson(json)).toList();
+        _searchResults = _places;
+        notifyListeners();
       } else {
         // Handle non-200 responses
         debugPrint('Failed to fetch places: ${response.body}');
@@ -112,9 +116,14 @@ class PlaceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void filterFavoritePlaces(List<String> favoritePlaceIds) {
-    _filteredPlaces =
-        _places.where((place) => favoritePlaceIds.contains(place.id)).toList();
+  void filterPlacesByCategory(String category) {
+    if (category == 'All') {
+      _filteredPlaces = _places; // Show all places if 'All' category is selected
+    } else {
+      _filteredPlaces = _places.where((place) => place.category == category).toList();
+    }
     notifyListeners();
   }
+
+
 }

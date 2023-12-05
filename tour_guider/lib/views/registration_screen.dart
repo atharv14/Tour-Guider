@@ -156,15 +156,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         // Register user using the provider
         registrationSuccess = await userProvider.register(newUser, _image);
 
-        debugPrint("Registered");
+        // debugPrint("Registered");
         // Show success message and navigate to the Login Screen
-        _showSnackBar("Registration Successful!", Colors.greenAccent);
+        // _showSnackBar("Registration Successful!", Colors.greenAccent);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
-      } catch (e) {
-        debugPrint("Registration Failed: $e");
+      } catch (e, stack) {
+        debugPrint("Registration Failed: ${e.toString()}");
+        debugPrint("Stack: ${stack}");
         // Show error message if registration or image upload fails
         _showSnackBar("Failed to register. Error: $e", Colors.redAccent);
       }
@@ -179,7 +180,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
-    } else if (_image != null) {
+    } else if (_image == null) {
       // This else-if branch is for the case where an image is selected but registration failed
       _showSnackBar("Failed to register", Colors.redAccent);
       debugPrint("Registration Failed but image is selected");

@@ -1,60 +1,50 @@
-
 class Review {
-  String id; // Unique identifier for the review
-  String userId; // ID of the user who wrote the review
-  // Todo: userName acts as foreign key from User model
-  String userName; // Name of the user for display purposes
-  String subject; // Subject or title of the review
-  String content; // Main content text of the review
-  double rating; // Numerical rating, e.g., out of 5 stars
-  DateTime date; // The date the review was posted
-  String userProfilePhoto;
-  List<String> images; // List of image URLs
+  String id;
+  double rating;
+  String subject;
+  String content;
+  DateTime dateTime;
+  String userId;
+  String placeId;
+  List<String>? photos;
 
   Review({
     required this.id,
-    required this.userId,
-    required this.userName,
+    required this.rating,
     required this.subject,
     required this.content,
-    required this.rating,
-    required this.date,
-    this.userProfilePhoto = '',
-    List<String>? images, // Initialize with an empty list by default
-  }) : images = images ?? [];
+    required this.dateTime,
+    required this.userId,
+    required this.placeId,
+    this.photos,
+  });
 
-  // Factory method to create a Review from a map (e.g., JSON)
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
-      userId: json['userId'],
-      userName: json['userName'],
+      rating: (json['ratings'] as int).toDouble(), // Assuming 'ratings' is an integer
       subject: json['subject'],
       content: json['content'],
-      rating: json['rating'].toDouble(),
-      date: DateTime.parse(json['date']),
-      userProfilePhoto: json['userProfilePhoto'] ?? '',
-      images: (json['images'] as List?)?.map((item) => item as String).toList() ?? [],
+      dateTime: DateTime.parse(json['dateTime']),
+      userId: json['userId'],
+      placeId: json['placeId'],
+      photos: json["photos"] != null
+          ? json['photos'].map<String>((photo) {
+            return photo['path'];
+          }).toList() : null,
     );
   }
 
-  // Method to convert Review to a map (e.g., for JSON)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userId': userId,
-      'userName': userName,
+      'ratings': rating,
       'subject': subject,
       'content': content,
-      'rating': rating,
-      'date': date.toIso8601String(),
-      'userProfilePhoto': userProfilePhoto,
-      'images': images
+      'dateTime': dateTime.toIso8601String(),
+      'userId': userId,
+      'placeId': placeId,
+      'photos': photos?.map((path) => {'path': path}).toList(),
     };
   }
-
-  String getUserInitials() {
-    return userName.isNotEmpty ? userName.substring(0, 1) : '';
-  }
-
 }

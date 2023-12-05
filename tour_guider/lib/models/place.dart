@@ -5,25 +5,24 @@ class Place {
   String name;
   String description;
   String category;
-  double averageRating;
-  // Todo: len function on reviews
-  List<Review> reviews;
+  double? averageRating;
+  List<Review>? reviews;
   Map<String, dynamic> operatingHours;
   Map<String, dynamic> address;
   List<String> contactInfo;
-  List<String> imageUrl; // URL to an image of the place
+  List<String>? imageUrl; // URL to an image of the place
 
   Place({
     required this.id,
     required this.name,
     required this.description,
     required this.category,
-    required this.averageRating,
-    required this.reviews,
+    this.averageRating,
+    this.reviews,
     required this.operatingHours,
     required this.address,
     required this.contactInfo,
-    required this.imageUrl,
+    this.imageUrl,
   });
 
   // Factory method to create a Place from a map (e.g., JSON)
@@ -33,12 +32,12 @@ class Place {
       name: json['name'],
       description: json['description'],
       category: json['category'],
-      averageRating: json['averageRating'].toDouble(),
-      reviews: List<Review>.from(json['reviews'].map((x) => Review.fromJson(x))),
+      averageRating: json['averageRating'],
+      reviews: json['reviews'] != null ? List<Review>.from(json['reviews'].map((x) => Review.fromJson(x))) : null,
       operatingHours: json['operatingHours'],
       address: json['address'],
       contactInfo: List<String>.from(json['contact']),
-      imageUrl: json['photos'].map<String>((photo) => photo['path']).toList(),
+      imageUrl: json["photos"] != null ? json['photos'].map<String>((photo) => photo['path']).toList() : null,
     );
   }
 
@@ -50,18 +49,34 @@ class Place {
       'description': description,
       'category': category,
       'averageRating': averageRating,
-      'reviews': reviews.map((x) => x.toJson()).toList(),
+      'reviews': reviews?.map((x) => x.toJson()).toList(),
       'operatingHours': operatingHours,
       'address': address,
       'contactInfo': contactInfo,
-      'imageUrl': imageUrl.map((url) => {'path': url}).toList(),
+      'imageUrl': imageUrl?.map((url) => {'path': url}).toList(),
     };
   }
 
-  String get location {
-    return '${address['street']}\n${address['city']}, ${address['state']} ${address['zipCode']}\n${address['country']}';
+  String get formattedContactInfo {
+    if (contactInfo.isNotEmpty) {
+      return contactInfo.first;
+    }
+    return 'No contact info available';
   }
 
-  int get totalReviews => reviews.length;
+  String get location {
+    return "${address['street']}\n${address['city']}, ${address['state']} ${address['zipCode']}\n${address['country']}";
+  }
+
+  String get formattedOperatingHours {
+    return operatingHours.entries.map((entry) {
+      String day = entry.key;
+      String startTime = entry.value['openingTime'] ?? 'N/A';
+      String endTime = entry.value['closingTime'] ?? 'N/A';
+      return "$day: $startTime - $endTime";
+    }).join('\n');
+  }
+
+  int get totalReviews => reviews?.length ?? 0;
 
 }

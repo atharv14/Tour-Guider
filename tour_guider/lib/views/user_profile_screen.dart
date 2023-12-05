@@ -1,9 +1,13 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/UserProvider.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+  final VoidCallback? onBack;
+
+  const UserProfileScreen({super.key, this.onBack});
 
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
@@ -14,17 +18,35 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     _loadUserDetails();
+    _fetchUserPhoto();
   }
 
+  // ${_loggedInUser!.profilePhotoPath!}
+  Future<void> _fetchUserPhoto() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final photoPath = userProvider.user?.profilePhotoPath;
+    if (photoPath != null) {
+      await userProvider.downloadImage(photoPath);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.onBack?.call(); // Invoke the callback
+    super.dispose();
+
+  }
+
+  // UserProfileScreen.dart
   Future<void> _loadUserDetails() async {
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
-      await userProvider.fetchUserDetails();
+      await userProvider.fetchUserDetails(); // Fetch logged-in user details
     } catch (error) {
-      // Handle any errors here
       debugPrint('Error loading user details: $error');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +78,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: user!.profilePhotoPath.isNotEmpty
-                  ? NetworkImage(user.profilePhotoPath)
-                  : null,
-              child:
-                  user.profilePhotoPath.isEmpty ? Text(user.initials()) : null,
+            Selector<UserProvider, ImageProvider?>(
+              selector: (_, provider) => provider.profileImage,
+              builder: (_, profileImage, __) {
+                return CircleAvatar(
+                  radius: 50,
+                  backgroundImage: profileImage,
+                  child: profileImage == null ? Text(user.initials()) : null,
+                );
+              },
             ),
+
             const SizedBox(height: 20),
             Text(user.fullName(), style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
@@ -84,13 +109,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               decoration: const InputDecoration(labelText: 'Bio'),
             ),
             const SizedBox(height: 20),
-            Row(
+            Column(
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Total Reviews: '),
-                Text(user.totalReviews.toString()),
-                Text('Saved Places Count: ${user?.savedPlaces.length ?? 0}'),
+                const SizedBox(height: 10),
+                Text('Total Reviews: ${user.totalReviews?.toString() ?? '0'}', style: const TextStyle(fontSize: 15),),
+                const SizedBox(height: 10),
+                Text('Saved Places Count: ${user.savedPlaces?.length ?? 0}', style: const TextStyle(fontSize: 15),),
               ],
             ),
+
           ],
         ),
       ),
