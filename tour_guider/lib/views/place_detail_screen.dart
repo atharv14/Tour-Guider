@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_guider/views/review_detail_screen.dart';
 import '../models/user.dart';
@@ -194,6 +195,20 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
+  void showImageDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: PhotoView(
+          imageProvider: image,
+          backgroundDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildImageCarousel(String placeId) {
     final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
 
@@ -203,11 +218,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
         itemBuilder: (context, index) {
-          return Image(
-            image: images[index],
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () => showImageDialog(context, images[index]),
+            child: Image(
+              image: images[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
           );
         },
       ),
@@ -440,33 +458,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     review.content,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  // const SizedBox(height: 10),
-                  //
-                  // // Horizontal row for review photos
-                  // if (review.photos != null && review.photos!.isNotEmpty) ...[
-                  //   SizedBox(
-                  //     height: 100, // Fixed height for image carousel/slider
-                  //     child: ListView.builder(
-                  //       scrollDirection: Axis.horizontal,
-                  //       itemCount: review.photos!.length,
-                  //       itemBuilder: (context, index) {
-                  //         return Padding(
-                  //           padding: const EdgeInsets.only(right: 8.0),
-                  //           child: Image.network(
-                  //             review.photos![index],
-                  //             width: 100, // Fixed width for each image
-                  //             fit: BoxFit.cover,
-                  //             errorBuilder: (context, error, stackTrace) {
-                  //               return const Icon(Icons.broken_image); // Placeholder for a broken image
-                  //             },
-                  //           ),
-                  //         );
-                  //       },
-                  //     ),
-                  //   ),
-                  // ] else ... [
-                  //   const Text('No photos'), // Displayed if there are no photos
-                  // ],
                 ],
               )
 
@@ -512,14 +503,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           (Route<dynamic> route) => false, // This predicate ensures all previous routes are removed
     );
   }
-
-
-  // void _toggleFavorite() {
-  //   setState(() {
-  //     widget.place.isFavorite = !widget.place.isFavorite;
-  //     widget.onFavoriteChanged(widget.place.isFavorite);
-  //   });
-  // }
 
   @override
   void dispose() {

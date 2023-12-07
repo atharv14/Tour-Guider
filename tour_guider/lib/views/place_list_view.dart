@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 // Import Place model class
 // Import Review model class
@@ -292,6 +293,20 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     placeProvider.fetchPlaces(); // Re-fetch all places
   }
 
+  void showImageDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: PhotoView(
+          imageProvider: image,
+          backgroundDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildImageCarousel(String placeId) {
     final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
 
@@ -301,11 +316,14 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
         itemBuilder: (context, index) {
-          return Image(
-            image: images[index],
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () => showImageDialog(context, images[index]),
+            child: Image(
+              image: images[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
           );
         },
       ),
@@ -368,28 +386,6 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                       );
                     },
                   ),
-
-                  // child: IconButton(
-                  //   icon: Icon(
-                  //     isFavorite ? Icons.favorite : Icons.favorite_border,
-                  //     color: isFavorite ? Colors.red : Colors.white,
-                  //   ),
-                  //   onPressed: () async {
-                  //     bool success = await userProvider.toggleFavoriteStatus(place);
-                  //     if (success) {
-                  //       // If you have a setState call, use it to update the UI
-                  //       setState(() {
-                  //         isFavorite = !isFavorite;
-                  //         _showToast("Place saved successfully!", Colors.greenAccent);
-                  //       });
-                  //     } else {
-                  //       // Handle failure
-                  //       debugPrint("Failed to update favorite status");
-                  //
-                  //     }
-                  //   },
-                  //   tooltip: 'Add to Favorite',
-                  // ),
                 ),
               ],
             ),
@@ -490,29 +486,27 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
 
   void _showToast(String message, Color color) {
     // Wrap the showToast call inside a Builder to get the correct context
-    Builder(
-      builder: (BuildContext context) {
-        fToast.showToast(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-              color: color,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.check),
-                const SizedBox(width: 12.0),
-                Text(message),
-              ],
-            ),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fToast.showToast(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: color,
           ),
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: const Duration(seconds: 5),
-        );
-        return Container(); // This container is just a placeholder
-      },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check),
+              const SizedBox(width: 12.0),
+              Text(message),
+            ],
+          ),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 5),
+      );
+    }
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import '../models/review.dart';
 import '../models/user.dart';
@@ -220,6 +221,21 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     );
   }
 
+  void showImageDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: PhotoView(
+          imageProvider: image,
+          backgroundDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
+
   Widget _buildImageList(String reviewId) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
     var images = reviewProvider.getReviewImages(reviewId); // Assuming such a method exists
@@ -230,11 +246,14 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
         itemBuilder: (context, index) {
-          return Image(
-            image: images[index],
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () => showImageDialog(context, images[index]),
+            child: Image(
+              image: images[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
           );
         },
       ),
