@@ -113,18 +113,33 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                       actions: <Widget>[
                         TextButton(
                           child: const Text('Cancel'),
-                          onPressed: () => Navigator.of(context).pop(false),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Review not deleted.')),
+                            );
+                            Navigator.of(context).pop(false);
+                          },
                         ),
                         TextButton(
                           child: const Text('Delete'),
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Review deleted successfully.')),
+                            );
+                            Navigator.of(context).pop(true);
+                          },
                         ),
                       ],
                     );
                   },
                 ) ?? false;
 
+                if (!mounted) return;
+
                 if (confirmDelete) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Review deleted successfully!')),
+                  );
                   // Delete the review
                   await reviewProvider.deleteReview(detailedReview.id);
                   // Navigate back or refresh as needed

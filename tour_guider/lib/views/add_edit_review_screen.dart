@@ -30,6 +30,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
   @override
   void initState() {
     super.initState();
+    _images = widget.review?.photos?.map((path) => File(path)).toList() ?? [];
     // If editing an existing review, populate the text fields
     if (widget.review != null) {
       _subjectController.text = widget.review!.subject;
@@ -135,15 +136,15 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: _images != null
-                          ? _images!.map((file) {
+                      children: _images!.isEmpty
+                      ? [const Text('No images')]
+                          : _images!.map((file) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child:
                                     Image.file(file, width: 100, height: 100),
                               );
-                            }).toList()
-                          : [const Text('No images')],
+                            }).toList(),
                     ),
                   ),
                   ElevatedButton(
@@ -173,18 +174,29 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                         );
 
                         if (widget.review == null) {
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(content: Text('Review added successfully!')),
+                          // );
                           // add review
                           await reviewProvider.addReview(widget.placeId, newReview);
+
                         } else {
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(content: Text('Review updated successfully!')),
+                          // );
                           // update review
                            await reviewProvider.updateReview(widget.review!.id, newReview);
                         }
 
                         // Upload images if there are any
                         if (_images != null && _images!.isNotEmpty) {
+
                           await reviewProvider.uploadReviewImages(_images!, newReview.id);
                         }
-
+                        // Show success message and navigate back
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Review submitted successfully')),
+                        );
                         Navigator.pop(context);
                       } else {
                         // Show error if required fields are not filled
