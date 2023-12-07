@@ -180,7 +180,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
-    } else if (_image == null) {
+    } else if (_image != null) {
       // This else-if branch is for the case where an image is selected but registration failed
       _showSnackBar("Failed to register", Colors.redAccent);
       debugPrint("Registration Failed but image is selected");

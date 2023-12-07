@@ -34,9 +34,9 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
   @override
   void initState() {
     super.initState();
-    final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
-    // Fetch places when the screen is loaded
-    placeProvider.fetchPlaces();
+    // final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
+    // // Fetch places when the screen is loaded
+    // placeProvider.fetchPlaces();
     _loadDataForCurrentUser();
 
     fToast = FToast();
@@ -76,14 +76,13 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
   void refreshUserData() {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     userProvider.fetchUserDetails(); // Re-fetch user details
-    // Optionally, you might want to refresh places as well
     final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
     placeProvider.fetchPlaces();
   }
 
   @override
   Widget build(BuildContext context) {
-    final placeProvider = Provider.of<PlaceProvider>(context);
+    // final placeProvider = Provider.of<PlaceProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final isAdmin = Provider.of<UserProvider>(context).user?.isAdmin ?? false;
     // final isAdmin = false;
@@ -123,7 +122,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => _handleLogout(),
+            onPressed: () => _handleLogout(context),
             tooltip: 'Logout',
           ),
         ],
@@ -174,7 +173,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
-              onTap: () => _handleLogout(),
+              onTap: () => _handleLogout(context),
             ),
           ],
         ),
@@ -218,17 +217,6 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
               },
             ),
           ),
-
-          // Expanded(
-          //   child: ListView.builder(
-          //     itemCount: placeProvider.places.length,
-          //     itemBuilder: (context, index) {
-          //       final place = placeProvider.places[index];
-          //       return _buildPlaceCard(
-          //           place, userProvider.user?.savedPlaces ?? []);
-          //     },
-          //   ),
-          // ),
         ],
       ),
       floatingActionButton: isAdmin
@@ -262,9 +250,11 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
 
   void _executeSearch() {
     String query = _searchController.text;
+    final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
     if (query.isNotEmpty) {
-      Provider.of<PlaceProvider>(context, listen: false).searchPlaces(query);
+      placeProvider.searchPlaces(query);
     }
+    placeProvider.fetchPlaces();
   }
 
   Widget _buildFilterChips() {
@@ -302,8 +292,33 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     placeProvider.fetchPlaces(); // Re-fetch all places
   }
 
+  Widget _buildImageCarousel(String placeId) {
+    final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return Image(
+            image: images[index],
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildPlaceCard(Place place, List<Place> savedPlaces) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (place.imageUrl != null && place.imageUrl!.isNotEmpty) {
+      Provider.of<PlaceProvider>(context, listen: false)
+          .downloadImagesForPlace(place.id, place.imageUrl!);
+    }
+
     // var isFavorite = savedPlaces.any((savedPlace) => savedPlace.id == place.id);
 
     return GestureDetector(
@@ -329,39 +344,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
             Stack(
               alignment: Alignment.topRight,
               children: [
-                SizedBox(
-                  height: 100,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: place.imageUrl?.length,
-                    itemBuilder: (context, index) {
-                      // Check if imageUrl is not null before accessing it
-                      final image = place.imageUrl?[index];
-                      if (image != null) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Image.network(
-                            image,
-                            fit: BoxFit.cover,
-                            width: 100, // Adjust as needed
-                            errorBuilder: (context, error, stackTrace) {
-                              // Return an error widget here if the image fails to load
-                              return const Icon(Icons
-                                  .broken_image); // Placeholder for a broken image
-                            },
-                          ),
-                        );
-                      } else {
-                        // Handle the case where imageUrl is null
-                        return const Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons
-                              .image_not_supported), // Placeholder for no image
-                        );
-                      }
-                    },
-                  ),
-                ),
+                _buildImageCarousel(place.id),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Selector<UserProvider, bool>(
@@ -374,10 +357,12 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                           color: isFavorite ? Colors.red : Colors.grey,
                         ),
                         onPressed: () {
+
                           userProvider.toggleFavoriteStatus(place).then((_) {
                             // No need to call setState() if using provider correctly.
                             setState(() {});
                           });
+                          userProvider.fetchUserDetails();
                         },
                         tooltip: 'Add or Remove From Favorite',
                       );
@@ -494,11 +479,12 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     super.dispose();
   }
 
-  void _handleLogout() {
+  void _handleLogout(BuildContext context) {
     _showToast('Successfully Logged out.', Colors.redAccent);
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (Route<dynamic> route) => false,
     );
   }
 

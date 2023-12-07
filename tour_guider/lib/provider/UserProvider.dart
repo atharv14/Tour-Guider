@@ -11,10 +11,13 @@ class UserProvider with ChangeNotifier {
   User? _user;
   User? _loggedInUser;
   List<User> _allUsers = [];
-  Map<String, User> _usersCache = {};
+  final Map<String, User> _usersCache = {};
   List<String> get favoritePlaceIds => _user?.savedPlaces?.map((place) => place.id).toList() ?? [];
   ImageProvider? _profileImage;
 
+  final Map<String, ImageProvider> _userImages = {}; // new
+
+  String ipPort = 'http://192.168.1.234:8080';
 
   // 192.168.1.230
   String authUrl = 'http://192.168.1.234:8080/api/v1/auth';
@@ -27,11 +30,70 @@ class UserProvider with ChangeNotifier {
   List<User> get allUsers => List.unmodifiable(_allUsers);
   Map<String, User> get usersCache => _usersCache;
   ImageProvider? get profileImage => _profileImage;
+  ImageProvider? getUserImage(String userId) => _userImages[userId];  // new
 
 
   void setUser(User newUser) {
     _user = newUser;
     notifyListeners();
+  }
+
+  // to Change Password
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    String? authToken = await _secureStorage.read(key: 'authToken');
+    if (authToken == null) return false;
+
+    try {
+      final url = Uri.parse('$authUrl/changePassword');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+        body: json.encode({
+          'oldPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint('Error changing password: ${response.body}');
+        return false;
+      }
+    } catch (error) {
+      debugPrint('Exception in changing password: $error');
+      return false;
+    }
+  }
+
+
+  // download userprofile-photo image
+  Future<void> downloadImageIfNeeded(String userId, String photoPath) async {
+    if (!_userImages.containsKey(userId)) {
+      try {
+        String? authToken = await _secureStorage.read(key: 'authToken');
+        final url = Uri.parse('$photoUrl/photos/fetch?photoPath=$photoPath');
+
+        final response = await http.get(
+          url,
+          headers: {
+            'Authorization': 'Bearer $authToken',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          _userImages[userId] = MemoryImage(response.bodyBytes);
+          notifyListeners();
+        } else {
+          debugPrint("Failed to fetch photo: ${response.body}");
+        }
+      } catch (e) {
+        debugPrint("Exception in fetching photo: $e");
+      }
+    }
   }
 
   Future<void> downloadImage(String photoPath) async {

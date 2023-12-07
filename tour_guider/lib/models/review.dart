@@ -29,9 +29,10 @@ class Review {
       userId: json['userId'],
       placeId: json['placeId'],
       photos: json["photos"] != null
-          ? json['photos'].map<String>((photo) {
-            return photo['path'];
-          }).toList() : null,
+          ? List<String>.from(
+          json['photos'].map((photo) => photo['path'] as String)
+      )
+          : null,
     );
   }
 

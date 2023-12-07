@@ -18,7 +18,6 @@ class ReviewDetailScreen extends StatefulWidget {
 
 class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
   // late Review detailedReview;
-  bool isLoading = true;
   late Future<User?> _userFuture;
   late Future<void> _reviewDetailsFuture;
 
@@ -27,11 +26,15 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     super.initState();
     _userFuture = _loadUserDetails();
     _reviewDetailsFuture = fetchReviewDetails();
-    // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    // if (_userFuture == null) {
-    //   _userFuture = userProvider.fetchUserById(widget.review.userId);
-    // }
     _fetchLoggedInUser();
+    _fetchImages();
+  }
+
+  Future<void> _fetchImages() async {
+    if (widget.review.photos != null && widget.review.photos!.isNotEmpty) {
+      final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
+      await reviewProvider.downloadReviewImages(widget.review.id, widget.review.photos!);
+    }
   }
 
   // UserProfileScreen.dart
@@ -63,6 +66,12 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     }
   }
 
+  Future<void> refreshReviewDetails() async {
+    setState(() {
+      _reviewDetailsFuture = fetchReviewDetails();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
@@ -70,31 +79,59 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     // final loggedInUserId =   // ID of the logged-in user
 
-
-    final bool userOwnsReview = (detailedReview != null) && (userProvider.user?.id == detailedReview.userId);
-    // if (isLoading || detailedReview == null) {
-    //   return Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Loading Review...'),
-    //     ),
-    //     body: const Center(child: CircularProgressIndicator()),
-    //   );
-    // }
+    final bool userOwnsReview = (detailedReview != null) &&
+        (userProvider.user?.id == detailedReview.userId);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Review'),
         actions: <Widget>[
-          if (userOwnsReview)
+          if (userOwnsReview) ...[
             IconButton(
               icon: const Icon(Icons.edit),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      AddEditReviewScreen(review: detailedReview),
-                ));
+              onPressed: () async {
+                await Navigator.of(context)
+                    .push(MaterialPageRoute(
+                      builder: (context) => AddEditReviewScreen(
+                        review: detailedReview,
+                      ),
+                    ))
+                    .then((_) => refreshReviewDetails());
               },
             ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                // Confirm deletion with the user before proceeding
+                final confirmDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Delete Review'),
+                      content: const Text('Are you sure you want to delete this review?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.of(context).pop(false),
+                        ),
+                        TextButton(
+                          child: const Text('Delete'),
+                          onPressed: () => Navigator.of(context).pop(true),
+                        ),
+                      ],
+                    );
+                  },
+                ) ?? false;
+
+                if (confirmDelete) {
+                  // Delete the review
+                  await reviewProvider.deleteReview(detailedReview.id);
+                  // Navigate back or refresh as needed
+                  Navigator.of(context).pop(); // Go back to the previous screen
+                }
+              },
+            ),
+          ]
         ],
       ),
       body: FutureBuilder<void>(
@@ -116,7 +153,13 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                 return Center(child: Text('Error: ${userSnapshot.error}'));
               }
 
-              final user = userSnapshot.data;
+              final reviewAuthor = userSnapshot.data;
+              if (reviewAuthor == null) {
+                return const Center(child: Text('User not found'));
+              }
+              userProvider.downloadImageIfNeeded(
+                  reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
+
               // Check if the user exists and the review belongs to the user
               // final bool userOwnsReview = user?.id == detailedReview.userId;
               // Now we can build the UI with user and review details
@@ -128,35 +171,18 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            // Navigate to UserProfileScreen with the user ID
-
-                            // Todo: go to userProfile and accept userId parameter
-                            // if (user != null) {
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => UserProfileScreen(userId: user.id)), // Pass the user's ID
-                            //   );
-                            // }
-                          },
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor:
-                                Colors.grey, // Default background color
-                            backgroundImage:
-                                user?.profilePhotoPath?.isNotEmpty == true
-                                    ? NetworkImage(user!.profilePhotoPath!)
-                                    : null,
-                            child: user?.profilePhotoPath == null ||
-                                    user!.profilePhotoPath!.isEmpty
-                                ? Text(
-                                    user!.initials(),
-                                    style: const TextStyle(color: Colors.white),
-                                  )
-                                : null,
-                          ),
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.grey,
+                          backgroundImage:
+                              userProvider.getUserImage(reviewAuthor.id),
+                          child: (reviewAuthor.profilePhotoPath == null ||
+                                  reviewAuthor.profilePhotoPath!.isEmpty)
+                              ? Text(
+                                  reviewAuthor.initials(),
+                                  style: const TextStyle(color: Colors.white),
+                                )
+                              : null,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -181,27 +207,8 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     const SizedBox(height: 20),
                     // Display images if available
                     if (detailedReview.photos?.isNotEmpty == true) ...[
-                      const SizedBox(height: 100),
-                      SizedBox(
-                        height: 100, // Fixed height for image carousel/slider
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: detailedReview.photos!.map((imageUrl) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Image.network(
-                                imageUrl,
-                                width: 100, // Fixed width for each image
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons
-                                      .broken_image); // Placeholder for a broken image
-                                },
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                      const SizedBox(height: 20),
+                      _buildImageList(detailedReview.id ?? ''),
                     ],
                   ],
                 ),
@@ -213,28 +220,24 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     );
   }
 
-  // Widget _buildImageList(List<String> imageUrls) {
-  //   return SizedBox(
-  //     height: 100,
-  //     child: ListView.builder(
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: imageUrls.length,
-  //       itemBuilder: (context, index) {
-  //         return Padding(
-  //           padding: const EdgeInsets.all(8.0),
-  //           child: Image.network(
-  //             imageUrls[index],
-  //             fit: BoxFit.cover,
-  //             width: 100,
-  //             height: 100,
-  //             errorBuilder: (context, error, stackTrace) {
-  //               return const Icon(
-  //                   Icons.broken_image); // Placeholder for a broken image
-  //             },
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget _buildImageList(String reviewId) {
+    final reviewProvider = Provider.of<ReviewProvider>(context);
+    var images = reviewProvider.getReviewImages(reviewId); // Assuming such a method exists
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return Image(
+            image: images[index],
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          );
+        },
+      ),
+    );
+  }
 }

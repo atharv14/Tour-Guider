@@ -187,15 +187,40 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             MaterialPageRoute(
               builder: (context) => AddEditReviewScreen(review: null, placeId: widget.placeId,),
             ),
-          );
+          ).then((_) => _refreshReviews());
         },
         child: const Icon(Icons.add),
       ),
     );
   }
 
+  Widget _buildImageCarousel(String placeId) {
+    final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return Image(
+            image: images[index],
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildPlaceDetails(
       Place place, bool isFavorite, UserProvider userProvider) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (place.imageUrl != null && place.imageUrl!.isNotEmpty) {
+      Provider.of<PlaceProvider>(context, listen: false)
+          .downloadImagesForPlace(place.id, place.imageUrl!);
+    }
     return Column(
       children: [
         Expanded(
@@ -205,40 +230,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             alignment: Alignment.topRight,
             children: [
               // Image with horizontal scroll
-              SizedBox(
-                height: 100, // Adjust as needed
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: place.imageUrl?.length ??
-                      0, // Assuming Place has a list of image URLs
-                  itemBuilder: (context, imageIndex) {
-                    // Check if imageUrl is not null before accessing it
-                    final image = place.imageUrl?[imageIndex];
-                    if (image != null) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Image.network(
-                          image,
-                          fit: BoxFit.cover,
-                          width: 100, // Adjust as needed
-                          errorBuilder: (context, error, stackTrace) {
-                            // Return an error widget here if the image fails to load
-                            return const Icon(Icons
-                                .broken_image); // Placeholder for a broken image
-                          },
-                        ),
-                      );
-                    } else {
-                      // Handle the case where imageUrl is null
-                      return const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(Icons
-                            .image_not_supported), // Placeholder for no image
-                      );
-                    }
-                  },
-                ),
-              ),
+              _buildImageCarousel(place.id),
               // Favorite icon button
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -255,6 +247,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         userProvider.toggleFavoriteStatus(place).then((_) {
                           // No need to call setState() if using provider correctly.
                         });
+                        userProvider.fetchUserDetails();
                       },
                       tooltip: 'Add or Remove From Favorite',
                     );
@@ -350,14 +343,21 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
+  void _refreshReviews() {
+    setState(() {
+      _reviewsFuture = Provider.of<ReviewProvider>(context, listen: false)
+          .fetchReviewsForPlace(widget.placeId);
+    });
+  }
+
   Widget _buildReviewCard(BuildContext context, Review review) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     // Fetch user details once when creating the review card
-    final Future<User?> _reviewAuthorFuture = userProvider.fetchUserById(review.userId);
+    // final Future<User?> _reviewAuthorFuture = userProvider.fetchUserById(review.userId);
 
     return FutureBuilder<User?>(
-      future: _reviewAuthorFuture,
+      future: userProvider.fetchUserById(review.userId),
       builder: (context, userSnapshot) {
         if (userSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -368,6 +368,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         }
 
         final reviewAuthor = userSnapshot.data!;
+        userProvider.downloadImageIfNeeded(reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
 
         return GestureDetector(
           onTap: () {
@@ -377,7 +378,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               MaterialPageRoute(
                 builder: (context) => ReviewDetailScreen(review: review),
               ),
-            );
+            ).then((_) => _refreshReviews());
           },
           child: Card(
             margin: const EdgeInsets.all(8.0),
@@ -395,14 +396,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+
                             CircleAvatar(
                               radius: 20,
-                              backgroundColor: Colors.grey, // Default background color
-                              backgroundImage: reviewAuthor.profilePhotoPath?.isNotEmpty == true
-                                  ? NetworkImage(reviewAuthor.profilePhotoPath!)
-                                  : null,
-                              child: reviewAuthor.profilePhotoPath == null ||
-                                  reviewAuthor.profilePhotoPath!.isEmpty
+                              backgroundColor: Colors.grey,
+                              backgroundImage: userProvider.getUserImage(reviewAuthor.id),
+                              child: (reviewAuthor.profilePhotoPath == null || reviewAuthor.profilePhotoPath!.isEmpty)
                                   ? Text(
                                 reviewAuthor.initials(),
                                 style: const TextStyle(color: Colors.white),
@@ -441,33 +440,33 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     review.content,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  const SizedBox(height: 10),
-
-                  // Horizontal row for review photos
-                  if (review.photos != null && review.photos!.isNotEmpty) ...[
-                    SizedBox(
-                      height: 100, // Fixed height for image carousel/slider
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: review.photos!.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Image.network(
-                              review.photos![index],
-                              width: 100, // Fixed width for each image
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.broken_image); // Placeholder for a broken image
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ] else ... [
-                    const Text('No photos'), // Displayed if there are no photos
-                  ],
+                  // const SizedBox(height: 10),
+                  //
+                  // // Horizontal row for review photos
+                  // if (review.photos != null && review.photos!.isNotEmpty) ...[
+                  //   SizedBox(
+                  //     height: 100, // Fixed height for image carousel/slider
+                  //     child: ListView.builder(
+                  //       scrollDirection: Axis.horizontal,
+                  //       itemCount: review.photos!.length,
+                  //       itemBuilder: (context, index) {
+                  //         return Padding(
+                  //           padding: const EdgeInsets.only(right: 8.0),
+                  //           child: Image.network(
+                  //             review.photos![index],
+                  //             width: 100, // Fixed width for each image
+                  //             fit: BoxFit.cover,
+                  //             errorBuilder: (context, error, stackTrace) {
+                  //               return const Icon(Icons.broken_image); // Placeholder for a broken image
+                  //             },
+                  //           ),
+                  //         );
+                  //       },
+                  //     ),
+                  //   ),
+                  // ] else ... [
+                  //   const Text('No photos'), // Displayed if there are no photos
+                  // ],
                 ],
               )
 

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/UserProvider.dart';
+import 'changePasswordScreen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -30,13 +31,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    widget.onBack?.call(); // Invoke the callback
-    super.dispose();
-
-  }
-
   // UserProfileScreen.dart
   Future<void> _loadUserDetails() async {
     try {
@@ -47,6 +41,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    widget.onBack?.call(); // Invoke the callback
+    super.dispose();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +70,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             icon: const Icon(Icons.settings),
             onPressed: () {
               // Navigate to settings screen or show settings options
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  // Pass the  user object
+                  builder: (context) => const ChangePasswordScreen(),
+                ),
+              );
             },
           ),
         ],

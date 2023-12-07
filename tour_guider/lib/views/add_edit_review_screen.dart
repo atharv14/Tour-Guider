@@ -27,7 +27,6 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
   List<File>? _images;
   final ImagePicker _picker = ImagePicker();
 
-
   @override
   void initState() {
     super.initState();
@@ -36,28 +35,10 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
       _subjectController.text = widget.review!.subject;
       _bodyController.text = widget.review!.content;
       _rating = widget.review!.rating;
-      if (widget.review?.photos != null) {
-        _images = widget.review!.photos!.map((path) => File(path)).toList();
-      } else {
-        _images = null; // Set to null if photos is null
-      }
+      _images = widget.review!.photos != null
+          ? widget.review!.photos!.map((path) => File(path)).toList()
+          : [];
     }
-  }
-
-  uploadImage(String title, File file) async {
-    var request = http.MultipartRequest("POST", Uri.parse("../assets/"));
-
-    request.fields['title'] = title;
-    request.headers['Authorization'] = "JWT";
-
-    var picture = http.MultipartFile.fromBytes('image', (await rootBundle.load('assets/place 1.jpeg')).buffer.asUint8List());
-
-    request.files.add(picture);
-
-    var response = await request.send();
-    var responseData = await response.stream.toBytes();
-    var result = String.fromCharCodes(responseData);
-    debugPrint(result);
   }
 
   Future<void> _pickImage() async {
@@ -69,22 +50,22 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
     }
   }
 
+  // Function to validate required fields
+  bool validateRequiredFields() {
+    return _subjectController.text.isNotEmpty &&
+        _rating > 0 &&
+        _bodyController.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
 
     // Function to get initials from user's name
-    String getInitials(String name) => name.isNotEmpty
-        ? name.trim().split(' ').map((l) => l[0]).take(2).join()
-        : 'X';
-
-    // Function to validate required fields
-    bool validateRequiredFields() {
-      return _subjectController.text.isNotEmpty &&
-          _rating > 0 &&
-          _bodyController.text.isNotEmpty;
-    }
+    // String getInitials(String name) => name.isNotEmpty
+    //     ? name.trim().split(' ').map((l) => l[0]).take(2).join()
+    //     : 'X';
 
     return Scaffold(
       appBar: AppBar(
@@ -96,31 +77,36 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    // child: CircleAvatar(
-                    //   backgroundImage: userProvider.user?.profilePhotoPath?.isNotEmpty ?? false
-                    //       ? NetworkImage(userProvider.user!.profilePhotoPath!)
-                    //       : null,
-                    //   child: userProvider.user?.profilePhotoPath?.isEmpty ?? true
-                    //       ? Text(getInitials(userProvider.user?.firstName ?? ''))
-                    //       : null,
-                    // ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topLeft,
+                  //   child: CircleAvatar(
+                  //     backgroundImage: userProvider.user?.profilePhotoPath?.isNotEmpty ?? false
+                  //         ? NetworkImage(userProvider.user!.profilePhotoPath!)
+                  //         : null,
+                  //     child: userProvider.user?.profilePhotoPath?.isEmpty ?? true
+                  //         ? Text(getInitials(userProvider.user?.firstName ?? ''))
+                  //         : null,
+                  //   ),
+                  // ),
                   TextFormField(
                     controller: _subjectController,
-                    decoration: const InputDecoration(labelText: 'Review Subject'),
-                    validator: (value) => value!.isEmpty ? 'Subject cannot be empty' : null,
+                    decoration:
+                        const InputDecoration(labelText: 'Review Subject'),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Subject cannot be empty' : null,
                     maxLines: 1,
                   ),
                   TextFormField(
                     initialValue: _rating.toString(),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,1}')),
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,1}')),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -131,27 +117,33 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                       labelText: 'Rating',
                       suffixText: 'Stars',
                     ),
-                    validator: (value) => value == null || double.tryParse(value)! <= 0 ? 'Rating must be greater than 0' : null,
+                    validator: (value) =>
+                        value == null || double.tryParse(value)! <= 0
+                            ? 'Rating must be greater than 0'
+                            : null,
                   ),
                   TextFormField(
                     controller: _bodyController,
                     decoration: const InputDecoration(labelText: 'Review Body'),
-                    validator: (value) => value!.isEmpty ? 'Review cannot be empty' : null,
+                    validator: (value) =>
+                        value!.isEmpty ? 'Review cannot be empty' : null,
                     maxLines: 10,
                     maxLength: 500,
                   ),
-                  SizedBox(height: 10),
-                  Text('Add Images (optional):'),
+                  const SizedBox(height: 10),
+                  const Text('Add Images (optional):'),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: _images != null ? _images!.map((file) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.file(file, width: 100, height: 100),
-                        );
-                      }).toList()
-                      : [const Text('No images')],
+                      children: _images != null
+                          ? _images!.map((file) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child:
+                                    Image.file(file, width: 100, height: 100),
+                              );
+                            }).toList()
+                          : [const Text('No images')],
                     ),
                   ),
                   ElevatedButton(
@@ -159,18 +151,20 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                     child: const Text('Pick Image'),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (userProvider.user == null) {
                         // Handle the null case
-                        print("${userProvider.user} is null");
+                        // print("${userProvider.user} is null");
                         return;
                       }
                       if (validateRequiredFields()) {
                         // Create or update review
                         Review newReview = Review(
-                          id: widget.review?.id ?? '', // Provide a default value or generate a new ID
+                          id: widget.review?.id ??
+                              '', // Provide a default value or generate a new ID
                           userId: userProvider.user!.id,
-                          placeId: widget.review?.placeId ?? '', // You need to provide the place ID here
+                          placeId: widget.review?.placeId ??
+                              '', // You need to provide the place ID here
                           rating: _rating,
                           subject: _subjectController.text,
                           content: _bodyController.text,
@@ -179,9 +173,16 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                         );
 
                         if (widget.review == null) {
-                          reviewProvider.addReview(widget.placeId, newReview);
+                          // add review
+                          await reviewProvider.addReview(widget.placeId, newReview);
                         } else {
-                          reviewProvider.updateReview(widget.review!.id, newReview);
+                          // update review
+                           await reviewProvider.updateReview(widget.review!.id, newReview);
+                        }
+
+                        // Upload images if there are any
+                        if (_images != null && _images!.isNotEmpty) {
+                          await reviewProvider.uploadReviewImages(_images!, newReview.id);
                         }
 
                         Navigator.pop(context);

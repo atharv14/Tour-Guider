@@ -32,12 +32,18 @@ class Place {
       name: json['name'],
       description: json['description'],
       category: json['category'],
-      averageRating: json['averageRating'],
-      reviews: json['reviews'] != null ? List<Review>.from(json['reviews'].map((x) => Review.fromJson(x))) : null,
+      averageRating: json['averageRatings'],
+      reviews: json['reviews'] != null
+          ? List<Review>.from(json['reviews'].map((x) => Review.fromJson(x)))
+          : null,
       operatingHours: json['operatingHours'],
       address: json['address'],
       contactInfo: List<String>.from(json['contact']),
-      imageUrl: json["photos"] != null ? json['photos'].map<String>((photo) => photo['path']).toList() : null,
+      imageUrl: json["photos"] != null
+          ? List<String>.from(
+          json['photos'].map((photo) => photo['path'] as String)
+      )
+          : null,
     );
   }
 
@@ -48,12 +54,12 @@ class Place {
       'name': name,
       'description': description,
       'category': category,
-      'averageRating': averageRating,
+      'averageRatings': averageRating,
       'reviews': reviews?.map((x) => x.toJson()).toList(),
       'operatingHours': operatingHours,
       'address': address,
       'contactInfo': contactInfo,
-      'imageUrl': imageUrl?.map((url) => {'path': url}).toList(),
+      'photos': imageUrl?.map((path) => {'path': path}).toList(),
     };
   }
 
@@ -78,5 +84,4 @@ class Place {
   }
 
   int get totalReviews => reviews?.length ?? 0;
-
 }

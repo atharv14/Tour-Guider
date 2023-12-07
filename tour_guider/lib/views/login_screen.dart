@@ -40,6 +40,7 @@ class _LoginScreen extends State<LoginScreen> {
     bool isSuccess = await userProvider.login(email, password);
 
     if (isSuccess) {
+      userProvider.fetchUserDetails();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const PlacesViewScreen()),
