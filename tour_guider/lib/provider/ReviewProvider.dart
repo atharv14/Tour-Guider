@@ -19,15 +19,16 @@ class ReviewProvider with ChangeNotifier {
     return _reviewImages[reviewId] ?? [];
   }
 
-  String ipPort = 'http://192.168.1.234:8080';
+  String ipPort = 'http://192.168.1.85:8080';
 
-  String baseUrl = 'http://192.168.1.234:8080/api/v1/reviews';
-  String photoBaseUrl = 'http://192.168.1.234:8080/api/v1/photos/upload/review';
-  String photoUrl = 'http://192.168.1.234:8080/api/v1/photos/fetch';
+  String baseUrl = 'http://192.168.1.85:8080/api/v1/reviews';
+  String photoBaseUrl = 'http://192.168.1.85:8080/api/v1/photos/upload/review';
+  String photoUrl = 'http://192.168.1.85:8080/api/v1/photos/fetch';
 
-
-  Future<void> downloadReviewImages(String reviewId, List<String> imagePaths) async {
-    if (_reviewImages.containsKey(reviewId) && _reviewImages[reviewId]!.isNotEmpty) {
+  Future<void> downloadReviewImages(
+      String reviewId, List<String> imagePaths) async {
+    if (_reviewImages.containsKey(reviewId) &&
+        _reviewImages[reviewId]!.isNotEmpty) {
       debugPrint("Images already downloaded, no need to download again");
       return; // Images already downloaded, no need to download again
     }
@@ -40,7 +41,8 @@ class ReviewProvider with ChangeNotifier {
       if (!_downloadedImages[reviewId]!.contains(path)) {
         try {
           final url = Uri.parse('$photoUrl?photoPath=$path');
-          final response = await http.get(url, headers: {'Authorization': 'Bearer $authToken'});
+          final response = await http
+              .get(url, headers: {'Authorization': 'Bearer $authToken'});
 
           if (response.statusCode == 200) {
             _reviewImages[reviewId] ??= [];
@@ -59,10 +61,8 @@ class ReviewProvider with ChangeNotifier {
 
   // Method to upload multiple review images
   Future<void> uploadReviewImages(List<File> images, String reviewId) async {
-    var request = http.MultipartRequest(
-        "POST",
-        Uri.parse("$photoBaseUrl/$reviewId")
-    );
+    var request =
+        http.MultipartRequest("POST", Uri.parse("$photoBaseUrl/$reviewId"));
 
     // Read authToken from secure storage and add it to request header
     String? authToken = await _secureStorage.read(key: 'authToken');
@@ -76,15 +76,15 @@ class ReviewProvider with ChangeNotifier {
 
     try {
       // Send the request
-      var response = await request.send();
+      final response = await request.send();
 
       // Handle the response
-      if (response.statusCode != 200) {
-        var responseBody = await response.stream.bytesToString();
-        debugPrint("Error uploading review images: $responseBody");
-      } else {
+      if (response.statusCode == 200) {
         // Optionally, update any local state or notify listeners
         notifyListeners(); // If needed to refresh UI or update local data
+      } else {
+        final responseBody = await response.stream.bytesToString();
+        debugPrint("Error uploading review images: $responseBody");
       }
     } catch (e) {
       debugPrint("Exception in review images upload: $e");
@@ -117,7 +117,7 @@ class ReviewProvider with ChangeNotifier {
     }
   }
 
-  // Todo fetchReview - GET
+  // fetchReview - GET
   Future<void> fetchReviewDetails(String reviewId) async {
     final url = Uri.parse('$baseUrl/$reviewId');
     String? authToken = await _secureStorage.read(key: 'authToken');
@@ -141,8 +141,8 @@ class ReviewProvider with ChangeNotifier {
     }
   }
 
-  // Todo addReview - POST
-  Future<void> addReview(String? placeId, Review review) async {
+  // addReview - POST
+  Future<String> addReview(String? placeId, Review review) async {
     final url = Uri.parse('$baseUrl/place/$placeId');
     String? authToken = await _secureStorage.read(key: 'authToken');
 
@@ -157,19 +157,25 @@ class ReviewProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
+        final newReviewId = json.decode(response.body)['id'];
         _reviews.add(review);
         notifyListeners();
+        // Fetch the complete review details using the new ID
+        await fetchReviewDetails(newReviewId);
+        return newReviewId;
       } else {
         // Handle error response
         debugPrint('Failed to add the review: ${response.body}');
+        return '';
       }
     } catch (error) {
       // Handle any exceptions
-      debugPrint('Error updating review: $error');
+      debugPrint('Error adding review: $error');
+      return '';
     }
   }
 
-  //Todo updateReview - PUT
+  // updateReview - PUT
   Future<void> updateReview(String reviewId, Review updatedReview) async {
     final reviewIndex = _reviews.indexWhere((review) => review.id == reviewId);
     if (reviewIndex >= 0) {
@@ -200,7 +206,7 @@ class ReviewProvider with ChangeNotifier {
     }
   }
 
-  //Todo deleteReview - DELETE
+  // deleteReview - DELETE
   Future<void> deleteReview(String reviewId) async {
     final url = Uri.parse('$baseUrl/$reviewId');
     String? authToken =

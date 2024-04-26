@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 import '../models/user.dart'; // Import User Model
 import '../provider/UserProvider.dart';
-import 'login_screen.dart'; // Import your login screen
+import 'LoginScreen.dart'; // Import your login screen
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});

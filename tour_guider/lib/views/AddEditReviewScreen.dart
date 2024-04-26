@@ -137,7 +137,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: _images!.isEmpty
-                      ? [const Text('No images')]
+                          ? [const Text('No images')]
                           : _images!.map((file) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -155,7 +155,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                     onPressed: () async {
                       if (userProvider.user == null) {
                         // Handle the null case
-                        // print("${userProvider.user} is null");
+                        debugPrint("user is null");
                         return;
                       }
                       if (validateRequiredFields()) {
@@ -164,8 +164,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                           id: widget.review?.id ??
                               '', // Provide a default value or generate a new ID
                           userId: userProvider.user!.id,
-                          placeId: widget.review?.placeId ??
-                              '', // You need to provide the place ID here
+                          placeId: widget.review?.placeId ?? '', // place ID
                           rating: _rating,
                           subject: _subjectController.text,
                           content: _bodyController.text,
@@ -173,41 +172,48 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                           photos: _images?.map((file) => file.path).toList(),
                         );
 
-                        if (widget.review == null) {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(content: Text('Review added successfully!')),
-                          // );
-                          // add review
-                          await reviewProvider.addReview(widget.placeId, newReview);
+                        String reviewId = '';
 
+                        if (widget.review == null) {
+                          // add review
+                          reviewId = await reviewProvider.addReview(
+                              widget.placeId, newReview);
+                          if (reviewId.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to add review')),
+                            );
+                            return;
+                          }
                         } else {
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(content: Text('Review updated successfully!')),
-                          // );
                           // update review
-                           await reviewProvider.updateReview(widget.review!.id, newReview);
+                          await reviewProvider.updateReview(
+                              widget.review!.id, newReview);
+                          reviewId = widget.review!.id;
                         }
 
                         // Upload images if there are any
                         if (_images != null && _images!.isNotEmpty) {
-
-                          await reviewProvider.uploadReviewImages(_images!, newReview.id);
+                          await reviewProvider.uploadReviewImages(
+                              _images!, newReview.id);
                         }
                         // Show success message and navigate back
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Review submitted successfully')),
+                          SnackBar(
+                              content: Text(
+                                  'Review ${widget.review == null ? "added" : "updated"} successfully')),
                         );
                         Navigator.pop(context);
                       } else {
                         // Show error if required fields are not filled
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Please fill all required fields"),
-                          ),
+                              content: Text("Please fill all required fields")),
                         );
                       }
                     },
-                    child: Text(widget.review == null ? 'Add Review' : 'Submit Review'),
+                    child: Text(
+                        widget.review == null ? 'Add Review' : 'Submit Review'),
                   ),
                 ],
               ),

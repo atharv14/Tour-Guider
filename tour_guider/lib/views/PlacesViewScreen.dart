@@ -1,18 +1,17 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
-// Import Place model class
-// Import Review model class
+
 import '../models/place.dart';
 import '../provider/PlaceProvider.dart';
 import '../provider/UserProvider.dart'; // Import UserProvider
-import 'login_screen.dart'; // Import login screen
+import 'LoginScreen.dart'; // Import login screen
 // Import Individual place view screen
-import 'place_detail_screen.dart';
-import 'user_profile_screen.dart'; // Import User Profile screen
+import 'PlaceCreationScreen.dart';
+import 'PlaceDetailScreen.dart';
+import 'UserProfileScreen.dart'; // Import User Profile screen
 
 class PlacesViewScreen extends StatefulWidget {
   const PlacesViewScreen({Key? key}) : super(key: key);
@@ -195,11 +194,11 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                     placesToShow = placeProvider.places;
                     break;
                   case DisplayMode.filtered:
-                  // Logic to get filtered places based on selected category
-                  placesToShow = placeProvider.places;
+                    // Logic to get filtered places based on selected category
+                    placesToShow = placeProvider.places;
                     break;
                   case DisplayMode.search:
-                  // Logic to get search results
+                    // Logic to get search results
                     placesToShow = placeProvider.searchResults;
                     break;
                   default:
@@ -224,6 +223,12 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
           ? FloatingActionButton(
               onPressed: () {
                 //ToDo Handle adding new Places
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceCreationScreen(),
+                  ),
+                );
               },
               tooltip: 'Add New Place',
               child: const Icon(Icons.add),
@@ -244,7 +249,8 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
             onPressed: _executeSearch, // Add the search execution function here
           ),
         ),
-        onSubmitted: (value) => _executeSearch(), // Optional: trigger search on keyboard submit
+        onSubmitted: (value) =>
+            _executeSearch(), // Optional: trigger search on keyboard submit
       ),
     );
   }
@@ -262,15 +268,22 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
     return Wrap(
       spacing: 8.0,
-      children: <String>['All', 'Favorites', 'RESTAURANT', 'ATTRACTION', 'SHOPPING', 'OTHER']
-          .map((category) => _buildCategoryChip(category, placeProvider)).toList(),
+      children: <String>[
+        'All',
+        'Favorites',
+        'RESTAURANT',
+        'ATTRACTION',
+        'SHOPPING',
+        'OTHER'
+      ].map((category) => _buildCategoryChip(category, placeProvider)).toList(),
     );
   }
 
   Widget _buildCategoryChip(String category, PlaceProvider placeProvider) {
     return ActionChip(
       label: Text(category),
-      backgroundColor: selectedCategory == category ? Colors.blue : Colors.grey[200],
+      backgroundColor:
+          selectedCategory == category ? Colors.blue : Colors.grey[200],
       onPressed: () {
         if (category == 'All') {
           displayMode = DisplayMode.all;
@@ -278,7 +291,8 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
         } else if (category == 'Favorites') {
           displayMode = DisplayMode.filtered;
           placeProvider.filterFavoritePlaces(
-              Provider.of<UserProvider>(context, listen: false).favoritePlaceIds);
+              Provider.of<UserProvider>(context, listen: false)
+                  .favoritePlaceIds);
         } else {
           displayMode = DisplayMode.filtered;
           placeProvider.filterPlacesByCategory(category);
@@ -308,8 +322,8 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
   }
 
   Widget _buildImageCarousel(String placeId) {
-    final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
-
+    final images =
+        Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
     return SizedBox(
       height: 100,
       child: ListView.builder(
@@ -336,9 +350,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
       Provider.of<PlaceProvider>(context, listen: false)
           .downloadImagesForPlace(place.id, place.imageUrl!);
     }
-
     // var isFavorite = savedPlaces.any((savedPlace) => savedPlace.id == place.id);
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -375,7 +387,6 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                           color: isFavorite ? Colors.red : Colors.grey,
                         ),
                         onPressed: () {
-
                           userProvider.toggleFavoriteStatus(place).then((_) {
                             // No need to call setState() if using provider correctly.
                             setState(() {});
@@ -419,18 +430,9 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
                       Text(
                         place.averageRating != null && place.averageRating! > 0
                             ? place.averageRating!.toStringAsFixed(1)
-                            : 'N/A',
+                            : 'No Ratings',
                       ),
                       Text('${place.totalReviews} Reviews'),
-                      // Wrap the timings Text widget in an Expanded to prevent overflow
-                      // Expanded(
-                      //   child: Text(
-                      //     'Timings: ${place.operatingHours}',
-                      //     textAlign: TextAlign.right,
-                      //     overflow: TextOverflow
-                      //         .ellipsis, // Add an ellipsis when the text overflows
-                      //   ),
-                      // ),
                     ],
                   ),
                 ],
@@ -480,7 +482,7 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (Route<dynamic> route) => false,
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -506,7 +508,6 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 5),
       );
-    }
-    );
+    });
   }
 }

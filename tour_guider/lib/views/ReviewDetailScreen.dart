@@ -5,8 +5,8 @@ import '../models/review.dart';
 import '../models/user.dart';
 import '../provider/ReviewProvider.dart';
 import '../provider/UserProvider.dart';
-import 'add_edit_review_screen.dart';
-import 'user_profile_screen.dart';
+import 'AddEditReviewScreen.dart';
+import 'UserProfileScreen.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   final Review review;
@@ -253,7 +253,7 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
   Widget _buildImageList(String reviewId) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
-    var images = reviewProvider.getReviewImages(reviewId); // Assuming such a method exists
+    var images = reviewProvider.getReviewImages(reviewId);
 
     return SizedBox(
       height: 100,

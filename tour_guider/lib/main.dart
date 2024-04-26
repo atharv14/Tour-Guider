@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'provider/UserProvider.dart'; // Import the UserProvider
 import 'provider/PlaceProvider.dart'; // Import the PlaceProvider
 import 'provider/ReviewProvider.dart'; // Import the ReviewProvider
-import 'views/login_screen.dart'; // Import login screen
-import 'views/registration_screen.dart'; // Import registration screen
+import 'views/LoginScreen.dart'; // Import login screen
+import 'views/RegistrationScreen.dart'; // Import registration screen
 
 void main() {
   runApp(const MyApp());

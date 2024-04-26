@@ -1,4 +1,7 @@
+import 'attraction.dart';
+import 'restaurant.dart';
 import 'review.dart';
+import 'shopping.dart';
 
 class Place {
   String id; // Unique identifier for the place
@@ -27,24 +30,33 @@ class Place {
 
   // Factory method to create a Place from a map (e.g., JSON)
   factory Place.fromJson(Map<String, dynamic> json) {
-    return Place(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      category: json['category'],
-      averageRating: json['averageRatings'],
-      reviews: json['reviews'] != null
-          ? List<Review>.from(json['reviews'].map((x) => Review.fromJson(x)))
-          : null,
-      operatingHours: json['operatingHours'],
-      address: json['address'],
-      contactInfo: List<String>.from(json['contact']),
-      imageUrl: json["photos"] != null
-          ? List<String>.from(
-          json['photos'].map((photo) => photo['path'] as String)
-      )
-          : null,
-    );
+    switch (json['category']) {
+      case 'ATTRACTION':
+        return Attraction.fromJson(json);
+      case 'RESTAURANT':
+        return Restaurant.fromJson(json);
+      case 'SHOPPING':
+        return Shopping.fromJson(json);
+      default:
+        return Place(
+          id: json['id'],
+          name: json['name'],
+          description: json['description'],
+          category: json['category'],
+          averageRating: json['averageRatings'],
+          reviews: json['reviews'] != null
+              ? List<Review>.from(
+                  json['reviews'].map((x) => Review.fromJson(x)))
+              : null,
+          operatingHours: json['operatingHours'],
+          address: json['address'],
+          contactInfo: List<String>.from(json['contact']),
+          imageUrl: json["photos"] != null
+              ? List<String>.from(
+                  json['photos'].map((photo) => photo['path'] as String))
+              : null,
+        );
+    }
   }
 
   // Method to convert Place to a map (e.g., for JSON)
@@ -58,7 +70,7 @@ class Place {
       'reviews': reviews?.map((x) => x.toJson()).toList(),
       'operatingHours': operatingHours,
       'address': address,
-      'contactInfo': contactInfo,
+      'contact': contactInfo,
       'photos': imageUrl?.map((path) => {'path': path}).toList(),
     };
   }

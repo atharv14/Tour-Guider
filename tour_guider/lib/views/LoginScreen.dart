@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'registration_screen.dart'; // Import registration screen
-import 'place_list_view.dart'; //Import places view screen
+import 'RegistrationScreen.dart'; // Import registration screen
+import 'PlacesViewScreen.dart'; //Import places view screen
 // import '../models/place.dart'; // Import Place model clas
 import '../provider/UserProvider.dart'; // Import UserProvider
 

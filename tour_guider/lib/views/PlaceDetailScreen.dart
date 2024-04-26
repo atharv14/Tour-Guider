@@ -2,31 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
-import 'package:tour_guider/views/review_detail_screen.dart';
-import '../models/user.dart';
-import '../provider/PlaceProvider.dart';
-//
-import '../models/place.dart'; //
-import '../models/review.dart'; //
+import 'package:tour_guider/views/ReviewDetailScreen.dart';
+import '../models/attraction.dart';
+import '../models/restaurant.dart';
+import '../models/shopping.dart';
+import '../models/user.dart'; // user model
+import '../models/place.dart'; // place model
+import '../models/review.dart'; // review model
+import '../provider/PlaceProvider.dart'; // Import PlaceProvider
 import '../provider/UserProvider.dart'; // Import UserProvider
 import '../provider/ReviewProvider.dart'; // Import ReviewProvider
-import 'add_edit_review_screen.dart';
-import 'login_screen.dart'; // Import login screen
-import 'place_list_view.dart'; //Import places view screen
-import 'user_profile_screen.dart'; // Import User Profile screen
-// Import Review view Screen
+import 'AddEditReviewScreen.dart'; // Import Add or Edit Review screen
+import 'LoginScreen.dart'; // Import login screen
+import 'PlacesViewScreen.dart'; //Import places view screen
+import 'UserProfileScreen.dart';  // Import User Profile screen
+import 'place_update_screen.dart'; // Import place update screen
 
 class PlaceDetailScreen extends StatefulWidget {
   final String placeId;
   final VoidCallback onBack;
 
-  // final Function(bool) onFavoriteChanged;
-
   const PlaceDetailScreen({
-    Key? key,
+    super.key,
     required this.placeId,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   _PlaceDetailScreenState createState() => _PlaceDetailScreenState();
@@ -36,9 +36,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   late FToast fToast; // Declare FToast instance
   late Future<Place?> _placeFuture;
   late Future<List<Review>> _reviewsFuture;
+
   // bool showFavoritesOnly = false;
   String selectedSortOption = 'New to Old'; // Default sort option
-  // var isAdmin = true;
 
   @override
   void initState() {
@@ -49,19 +49,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     _placeFuture = placeProvider.fetchPlaceById(widget.placeId);
     final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
     _reviewsFuture = reviewProvider.fetchReviewsForPlace(widget.placeId);
-
   }
 
   @override
   Widget build(BuildContext context) {
-    // Access user data using Provider
-    // final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
-    final reviewProvider = Provider.of<ReviewProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
-    final bool isFavorite = userProvider.user?.savedPlaces
-            ?.any((place) => place.id == widget.placeId) ??
-        false;
-
     final bool isAdmin = userProvider.user?.isAdmin ?? false;
 
     return Scaffold(
@@ -111,13 +103,42 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             },
             tooltip: 'Logout',
           ),
-          if (isAdmin)
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                //ToDo Handle Place Settings
+          if (isAdmin) // Check if admin
+            FutureBuilder<Place?>(
+              future: _placeFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const IconButton(
+                    icon: Icon(Icons.hourglass_empty),
+                    onPressed: null,
+                  );
+                } else if (snapshot.hasError) {
+                  return const IconButton(
+                    icon: Icon(Icons.error),
+                    onPressed: null,
+                  );
+                } else if (snapshot.hasData) {
+                  return IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdatePlaceScreen(place: snapshot.data!),
+                        ),
+                      ).then((_) {
+                        // Optional: Refresh any data or state when returning from the UpdatePlaceScreen
+                      });
+                    },
+                    tooltip: 'Edit the place',
+                  );
+                } else {
+                  return const IconButton(
+                    icon: Icon(Icons.place),
+                    onPressed: null,
+                  );
+                }
               },
-              tooltip: 'Edit the place',
             ),
         ],
       ),
@@ -127,18 +148,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
-
-          if (snapshot.hasError) {
+          else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
-
-          if (!snapshot.hasData) {
+          else if (!snapshot.hasData) {
             return const Text('Place not found');
           }
 
           final place = snapshot.data!;
+
           final bool isFavorite =
               userProvider.user?.savedPlaces?.contains(place.id) ?? false;
+
+          debugPrint("Place before building Place details: $place");
 
           return Column(
             children: [
@@ -186,11 +208,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddEditReviewScreen(review: null, placeId: widget.placeId,),
+              builder: (context) => AddEditReviewScreen(
+                review: null,
+                placeId: widget.placeId,
+              ),
             ),
           ).then((_) => _refreshReviews());
         },
-        child: const Icon(Icons.add),
+        tooltip: 'Add new Review',
+        child: const Text('Write a Review'),
       ),
     );
   }
@@ -210,10 +236,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   }
 
   Widget _buildImageCarousel(String placeId) {
-    final images = Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
-
+    final images =
+        Provider.of<PlaceProvider>(context).getImagesForPlace(placeId);
     return SizedBox(
-      height: 100,
+      height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: images.length,
@@ -221,9 +247,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           return GestureDetector(
             onTap: () => showImageDialog(context, images[index]),
             child: Image(
-              image: images[index],
-              width: 100,
-              height: 100,
+              image: images[index], //width: 100, height: 100,
               fit: BoxFit.cover,
             ),
           );
@@ -232,8 +256,44 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  Widget _buildPlaceDetails(
-      Place place, bool isFavorite, UserProvider userProvider) {
+  List<Widget> _buildCategorySpecificDetails(Place place) {
+    List<Widget> details = [];
+    debugPrint(
+        "Place: $place \nProcessing place of category: ${place.category}");
+    if (place is Attraction) {
+      debugPrint("It's an attraction.");
+      details.add(Text("Theme: ${place.theme}"));
+      details.add(Text("Entry Fee: \$${place.entryFee}"));
+      details.add(Text("Kid Friendly: ${place.kidFriendly ? 'Yes' : 'No'}"));
+      details.add(
+          Text("Parking Available: ${place.parkingAvailable ? 'Yes' : 'No'}"));
+    } else if (place is Restaurant) {
+      debugPrint("It's a restaurant.");
+      details.add(Text("Cuisines: ${place.cuisines.join(', ')}"));
+      details.add(Text("Price for Two: \$${place.priceForTwo}"));
+      details.add(Text(
+          "Reservations: ${place.reservationsRequired ? 'Required' : 'Not required'}"));
+      details.add(Text("Type of Restaurant: ${place.type}"));
+    } else if (place is Shopping) {
+      debugPrint("It's a shopping.");
+      details.add(Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(
+              text: "Associated Brands: \n",
+              style: TextStyle(fontWeight: FontWeight.w900),
+            ),
+            TextSpan(text: place.associatedBrands.join(', ')),
+          ],
+        ),
+      ));
+    }
+    return details;
+  }
+
+  Widget _buildPlaceDetails(place, bool isFavorite, UserProvider userProvider) {
+    List<Widget> categoryDetails = _buildCategorySpecificDetails(place);
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     if (place.imageUrl != null && place.imageUrl!.isNotEmpty) {
       Provider.of<PlaceProvider>(context, listen: false)
@@ -263,7 +323,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       ),
                       onPressed: () {
                         userProvider.toggleFavoriteStatus(place).then((_) {
-                          // No need to call setState() if using provider correctly.
+                          setState(() {});
                         });
                         userProvider.fetchUserDetails();
                       },
@@ -277,7 +337,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         // Place name, category, and other details (remaining 25% of the top part)
         Expanded(
-          flex: 25,
+          flex: 35,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -292,8 +352,37 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       Text(place.category,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       Text(place.description),
-                      Text('Location: ${place.location}'),
-                      Text('Contact: ${place.formattedContactInfo}'),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Location: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            TextSpan(
+                              text: place.location,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Contact: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            TextSpan(
+                              text: place.formattedContactInfo,
+                            ),
+                          ],
+                        ),
+                      ),
+                      ...categoryDetails,
                     ],
                   ),
                 ),
@@ -305,7 +394,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     Text(
                       place.averageRating != null
                           ? place.averageRating!.toStringAsFixed(1)
-                          : 'N/A',
+                          : 'No Ratings',
                     ),
                     Text('${place.totalReviews} Reviews'),
                     // Wrap the timings Text widget in an Expanded to prevent overflow
@@ -313,10 +402,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       child: Text(
                         'Timings: \n${place.formattedOperatingHours}',
                         textAlign: TextAlign.right,
-                        overflow: TextOverflow.ellipsis, // Add an ellipsis when the text overflows
+                        overflow: TextOverflow
+                            .ellipsis, // Add an ellipsis when the text overflows
                       ),
                     ),
-
                   ],
                 ),
               ],
@@ -332,32 +421,32 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
     return Column(
       children: [
-      Expanded(
-        flex: 60, // 60% of the screen for reviews
-        child: FutureBuilder<List<Review>>(
-          future: _reviewsFuture,
-          builder: (context, snapshot) {
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   return const Center(child: CircularProgressIndicator());
-            // }
+        Expanded(
+          flex: 50, // 60% of the screen for reviews
+          child: FutureBuilder<List<Review>>(
+            future: _reviewsFuture,
+            builder: (context, snapshot) {
+              // if (snapshot.connectionState == ConnectionState.waiting) {
+              //   return const Center(child: CircularProgressIndicator());
+              // }
 
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                snapshot.data!.isEmpty) {
-              return const Center(child: Text('No reviews found'));
-            }
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
+                return const Center(child: Text('No reviews found'));
+              }
 
-            final reviews = snapshot.data!;
-            return ListView.builder(
-              itemCount: reviews.length,
-              itemBuilder: (context, index) {
-                return _buildReviewCard(context, reviews[index]);
-              },
-            );
-          },
+              final reviews = snapshot.data!;
+              return ListView.builder(
+                itemCount: reviews.length,
+                itemBuilder: (context, index) {
+                  return _buildReviewCard(context, reviews[index]);
+                },
+              );
+            },
+          ),
         ),
-      ),
-    ],
+      ],
     );
   }
 
@@ -386,7 +475,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         }
 
         final reviewAuthor = userSnapshot.data!;
-        userProvider.downloadImageIfNeeded(reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
+        userProvider.downloadImageIfNeeded(
+            reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
 
         return GestureDetector(
           onTap: () {
@@ -401,67 +491,67 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           child: Card(
             margin: const EdgeInsets.all(8.0),
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Profile photo and subject column
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.grey,
-                              backgroundImage: userProvider.getUserImage(reviewAuthor.id),
-                              child: (reviewAuthor.profilePhotoPath == null || reviewAuthor.profilePhotoPath!.isEmpty)
-                                  ? Text(
-                                reviewAuthor.initials(),
-                                style: const TextStyle(color: Colors.white),
-                              )
-                                  : null,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              review.subject,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Profile photo and subject column
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.grey,
+                                backgroundImage:
+                                    userProvider.getUserImage(reviewAuthor.id),
+                                child: (reviewAuthor.profilePhotoPath == null ||
+                                        reviewAuthor.profilePhotoPath!.isEmpty)
+                                    ? Text(
+                                        reviewAuthor.initials(),
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      )
+                                    : null,
                               ),
+                              const SizedBox(height: 8),
+                              Text(
+                                review.subject,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Ratings column
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            _buildRatingStars(review.rating),
+                            Text(
+                              review.rating.toStringAsFixed(1),
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ],
                         ),
-                      ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
 
-                      // Ratings column
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _buildRatingStars(review.rating),
-                          Text(
-                            review.rating.toStringAsFixed(1),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Review content
-                  Text(
-                    review.content,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              )
-
-            ),
+                    // Review content
+                    Text(
+                      review.content,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                )),
           ),
         );
       },
@@ -496,11 +586,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   void _handleLogout(BuildContext context) {
     _showToast('Successfully Logged out.', Colors.redAccent);
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (Route<dynamic> route) => false, // This predicate ensures all previous routes are removed
+      (Route<dynamic> route) =>
+          false, // This predicate ensures all previous routes are removed
     );
   }
 
@@ -509,45 +599,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     // Navigator.pop(context, places); // Return the updated places list
     super.dispose();
   }
-
-  // List<Widget> _buildAppBarActions(bool isAdmin) {
-  //   return [
-  //     IconButton(
-  //       icon: const Icon(Icons.home),
-  //       onPressed: () {
-  //         Navigator.pushAndRemoveUntil(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => const PlacesViewScreen()),
-  //           ModalRoute.withName('/'),
-  //         );
-  //       },
-  //       tooltip: 'Home',
-  //     ),
-  //     IconButton(
-  //       icon: const Icon(Icons.account_circle),
-  //       onPressed: () {
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-  //         );
-  //       },
-  //       tooltip: 'User Profile',
-  //     ),
-  //     IconButton(
-  //       icon: const Icon(Icons.logout),
-  //       onPressed: () => _handleLogout(),
-  //       tooltip: 'Logout',
-  //     ),
-  //     if (isAdmin)
-  //       IconButton(
-  //         icon: const Icon(Icons.settings),
-  //         onPressed: () {
-  //           // TODO: Handle Place Settings
-  //         },
-  //         tooltip: 'Edit the place',
-  //       ),
-  //   ];
-  // }
 
   void _showToast(String message, Color color) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -570,7 +621,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 5),
       );
-    }
-    );
+    });
   }
 }

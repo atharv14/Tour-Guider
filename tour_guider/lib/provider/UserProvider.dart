@@ -1,9 +1,9 @@
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 import '../models/place.dart';
 import '../models/user.dart';
 
@@ -12,26 +12,27 @@ class UserProvider with ChangeNotifier {
   User? _loggedInUser;
   List<User> _allUsers = [];
   final Map<String, User> _usersCache = {};
-  List<String> get favoritePlaceIds => _user?.savedPlaces?.map((place) => place.id).toList() ?? [];
+  List<String> get favoritePlaceIds =>
+      _user?.savedPlaces?.map((place) => place.id).toList() ?? [];
   ImageProvider? _profileImage;
 
   final Map<String, ImageProvider> _userImages = {}; // new
 
-  String ipPort = 'http://192.168.1.234:8080';
+  String ipPort = 'http://192.168.1.85:8080';
 
   // 192.168.1.230
-  String authUrl = 'http://192.168.1.234:8080/api/v1/auth';
-  String photoUrl = 'http://192.168.1.234:8080/api/v1';
-  String baseUrl = 'http://192.168.1.234:8080/api/v1/users';
-  final String userDetailUrl = 'http://192.168.1.234:8080/api/v1/users/loggedInUser';
+  String authUrl = 'http://192.168.1.85:8080/api/v1/auth';
+  String photoUrl = 'http://192.168.1.85:8080/api/v1';
+  String baseUrl = 'http://192.168.1.85:8080/api/v1/users';
+  final String userDetailUrl =
+      'http://192.168.1.85:8080/api/v1/users/loggedInUser';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   User? get user => _user;
   List<User> get allUsers => List.unmodifiable(_allUsers);
   Map<String, User> get usersCache => _usersCache;
   ImageProvider? get profileImage => _profileImage;
-  ImageProvider? getUserImage(String userId) => _userImages[userId];  // new
-
+  ImageProvider? getUserImage(String userId) => _userImages[userId]; // new
 
   void setUser(User newUser) {
     _user = newUser;
@@ -39,7 +40,8 @@ class UserProvider with ChangeNotifier {
   }
 
   // to Change Password
-  Future<bool> changePassword(String currentPassword, String newPassword) async {
+  Future<bool> changePassword(
+      String currentPassword, String newPassword) async {
     String? authToken = await _secureStorage.read(key: 'authToken');
     if (authToken == null) return false;
 
@@ -68,7 +70,6 @@ class UserProvider with ChangeNotifier {
       return false;
     }
   }
-
 
   // download userprofile-photo image
   Future<void> downloadImageIfNeeded(String userId, String photoPath) async {
@@ -153,12 +154,8 @@ class UserProvider with ChangeNotifier {
     try {
       final url = Uri.parse(userDetailUrl);
       String? authToken = await _secureStorage.read(key: 'authToken');
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $authToken'
-        }
-      );
+      final response =
+          await http.get(url, headers: {'Authorization': 'Bearer $authToken'});
       if (response.statusCode == 200) {
         Map<String, dynamic> userJson = json.decode(response.body);
         _user = User.fromJson(userJson);
@@ -174,7 +171,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  //Todo
   // Fetch all users
   Future<void> fetchAllUsers() async {
     final url = Uri.parse(baseUrl);
@@ -203,7 +199,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  //Todo
   // Save places for the current user
   Future<bool> savePlaceForUser(Place placeId) async {
     String? authToken = await _secureStorage.read(key: 'authToken');
@@ -244,7 +239,9 @@ class UserProvider with ChangeNotifier {
 
     try {
       // Check if the place is already a favorite
-      bool isFavorite = _user?.savedPlaces?.any((savedPlace) => savedPlace.id == place.id) ?? false;
+      bool isFavorite =
+          _user?.savedPlaces?.any((savedPlace) => savedPlace.id == place.id) ??
+              false;
 
       final response = await http.put(
         Uri.parse('$baseUrl/place/${place.id}'),
@@ -252,13 +249,15 @@ class UserProvider with ChangeNotifier {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken',
         },
-        body: json.encode({'isFavorite': !isFavorite}), // Toggle the favorite status
+        body: json
+            .encode({'isFavorite': !isFavorite}), // Toggle the favorite status
       );
 
       if (response.statusCode == 204) {
         // Update the local user object
         if (isFavorite) {
-          _user?.savedPlaces?.removeWhere((savedPlace) => savedPlace.id == place.id);
+          _user?.savedPlaces
+              ?.removeWhere((savedPlace) => savedPlace.id == place.id);
         } else {
           _user?.savedPlaces?.add(place);
         }
@@ -321,8 +320,6 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-
-  // Todo
   // Fetch a user by ID
   Future<User?> fetchUserById(String userId) async {
     // if (_usersCache.containsKey(userId)) {
@@ -333,7 +330,8 @@ class UserProvider with ChangeNotifier {
 
     try {
       final response = await http.get(url, headers: {
-        'Authorization': 'Bearer $authToken', // Uncomment and replace token-based auth
+        'Authorization':
+            'Bearer $authToken', // Uncomment and replace token-based auth
         // 'Content-Type': 'application/json',
       });
 
@@ -342,7 +340,8 @@ class UserProvider with ChangeNotifier {
         final userJson = json.decode(response.body);
         debugPrint("Decoded JSON: $userJson"); // Additional debugging print
         //
-        User fetchedUser = User.fromJson(userJson); // Assuming User.fromJson is a constructor that initializes a User object from a JSON map
+        User fetchedUser = User.fromJson(
+            userJson); // Assuming User.fromJson is a constructor that initializes a User object from a JSON map
         _usersCache[userId] = fetchedUser;
         // notifyListeners();
         return fetchedUser;
@@ -397,7 +396,9 @@ class UserProvider with ChangeNotifier {
         if (imageFile != null) {
           await uploadImage(imageFile, _user!.id);
           debugPrint("ImageUploaded");
-        } else {debugPrint("Image is null");}
+        } else {
+          debugPrint("Image is null");
+        }
       } else {
         debugPrint("Error in user registration: ${response.body}");
       }
@@ -407,14 +408,11 @@ class UserProvider with ChangeNotifier {
     return true;
   }
 
-
   // upload user profile photo
   Future<void> uploadImage(File image, String userId) async {
     try {
       var request = http.MultipartRequest(
-          "POST",
-          Uri.parse("$photoUrl/photos/upload/user")
-      );
+          "POST", Uri.parse("$photoUrl/photos/upload/user"));
 
       // Add file to the request
       var picture = await http.MultipartFile.fromPath('file', image.path);
@@ -441,7 +439,6 @@ class UserProvider with ChangeNotifier {
       debugPrint("Exception in image upload: $e");
     }
   }
-
 
   // LOGIN
   Future<bool> login(String username, String password) async {
@@ -478,8 +475,6 @@ class UserProvider with ChangeNotifier {
       return false;
     }
   }
-
-
 
 // Add any other methods you might need to modify the user data
 }

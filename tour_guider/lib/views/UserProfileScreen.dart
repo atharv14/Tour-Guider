@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/UserProvider.dart';
-import 'changePasswordScreen.dart';
+import 'ChangePasswordScreen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final VoidCallback? onBack;

@@ -22,7 +22,7 @@ class Review {
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
-      rating: (json['ratings'] as int).toDouble(), // Assuming 'ratings' is an integer
+      rating: (json['ratings']).toDouble(), // Assuming 'ratings' is an integer
       subject: json['subject'],
       content: json['content'],
       dateTime: DateTime.parse(json['dateTime']),
