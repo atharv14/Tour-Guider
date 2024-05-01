@@ -1,0 +1,769 @@
+{
+	"info": {
+		"_postman_id": "f34a7525-691f-4e0b-8b88-f46cc7578f3b",
+		"name": "tourguider",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29391895",
+		"_collection_link": "https://dark-equinox-136476.postman.co/workspace/TourGuider~c7f0b6c6-8253-43fb-92a1-82bc57e4b913/collection/29391895-f34a7525-691f-4e0b-8b88-f46cc7578f3b?action=share&source=collection_link&creator=29391895"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"rishank@gmail.com\",\n  \"firstName\": \"Rishank\",\n  \"lastName\": \"Karkera\",\n  \"password\": \"pass123\",\n  \"username\": \"rkarker1\",\n  \"bio\": \"My name is rishank\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signup",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register admin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"atharv@gmail.com\",\n    \"firstName\": \"Atharv\",\n    \"lastName\": \"Mhatre\",\n    \"password\": \"pass123\",\n    \"username\": \"atharv\",\n    \"bio\": \"My name is atharv, I'm an admin\",\n    \"masterKey\": \"abc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/admin/signup",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"admin",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"pass123\",\n  \"username\": \"atharv\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"pass123\",\n  \"newPassword\": \"pass1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/changePassword",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "fetch all users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save place",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/users/place/656832984194ca2993b75ba9",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"place",
+								"656832984194ca2993b75ba9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetch user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/6568205d4ddc476868db4145",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"6568205d4ddc476868db4145"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetch logged in user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users/loggedInUser",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"loggedInUser"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "places",
+			"item": [
+				{
+					"name": "restaurant",
+					"item": [
+						{
+							"name": "create restaurant",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"KFC\",\n    \"description\": \"Fast food restaurant\",\n    \"address\": {\n        \"street\": \"11 Schubert St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    },\n    \"type\": \"Dining\",\n    \"cuisines\": [\n        \"Asian\",\n        \"Korean\",\n        \"Japanese\"\n    ],\n    \"reservationsRequired\": false,\n    \"priceForTwo\": 17.99\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/restaurants",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"restaurants"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update Restaurant",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"KFC\",\n    \"description\": \"Fast food restaurant\",\n    \"address\": {\n        \"street\": \"37 Haendel St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    },\n    \"type\": \"Dining\",\n    \"cuisines\": [\n        \"Asian\",\n        \"Korean\",\n        \"Japanese\"\n    ],\n    \"reservationsRequired\": false,\n    \"priceForTwo\": 17.99\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/restaurants/656aa868cfc5904bae3d78e5",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"restaurants",
+										"656aa868cfc5904bae3d78e5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "shopping",
+					"item": [
+						{
+							"name": "create shopping",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Waterloo Outlet\",\n    \"description\": \"Large shopping complex\",\n    \"address\": {\n        \"street\": \"11 Schubert St\",\n        \"city\": \"Miami\",\n        \"state\": \"FL\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    },\n    \"associatedBrands\": [\n        \"GAP\",\n        \"Columbia\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/shopping",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"shopping"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update shopping",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Waterloo Outlet\",\n    \"description\": \"Large shopping complex\",\n    \"address\": {\n        \"street\": \"37 Haendel St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        },\n        \"TUESDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"12:00\"\n        }\n    },\n    \"associatedBrands\": [\n        \"GAP\",\n        \"Columbia\",\n        \"Nike\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/shopping/6567d6cc886c1e4911b3667f",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"shopping",
+										"6567d6cc886c1e4911b3667f"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "attraction",
+					"item": [
+						{
+							"name": "create attraction",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Glen Watkins\",\n    \"description\": \"Scenic park\",\n    \"address\": {\n        \"street\": \"11 Schubert St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    },\n    \"theme\": \"WaterFall\",\n    \"entryFee\": 5,\n    \"parkingAvailable\": true,\n    \"kidFriendly\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/attractions",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"attractions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update attraction",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Glen Watkins\",\n    \"description\": \"Scenic park\",\n    \"address\": {\n        \"street\": \"22 Chestnut St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    },\n    \"theme\": \"WaterFall\",\n    \"entryFee\": 15,\n    \"parkingAvailable\": true,\n    \"kidFriendly\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/places/attractions/6567d7d3886c1e4911b36680",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"places",
+										"attractions",
+										"6567d7d3886c1e4911b36680"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Fetch places",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/places",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search places",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/places/search?searchText=Chinese",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places",
+								"search"
+							],
+							"query": [
+								{
+									"key": "searchText",
+									"value": "Chinese",
+									"description": "Field containing text to search"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch place by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/places/6567d6cc886c1e4911b3667f",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places",
+								"6567d6cc886c1e4911b3667f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create place",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Banyan Grocers\",\n    \"description\": \"Grocery store\",\n    \"address\": {\n        \"street\": \"11 Schubert St\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/places/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update place",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Banyan Grocers\",\n    \"description\": \"Grocery store\",\n    \"address\": {\n        \"street\": \"some street\",\n        \"city\": \"Binghamton\",\n        \"state\": \"NY\",\n        \"country\": \"USA\",\n        \"zipCode\": \"13905\"\n    },\n    \"contact\": [\n        \"6072969091\"\n    ],\n    \"operatingHours\": {\n        \"MONDAY\": {\n            \"openingTime\": \"11:00\",\n            \"closingTime\": \"23:59\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/places/656aa8facfc5904bae3d78e6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places",
+								"656aa8facfc5904bae3d78e6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete place by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/places/656828c8eab61008cebf1aa6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"places",
+								"656828c8eab61008cebf1aa6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "reviews",
+			"item": [
+				{
+					"name": "create review",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subject\": \"Great place!\",\n    \"content\": \"The food is really good\",\n    \"ratings\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reviews/place/656aeb450b961b164ef13157",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reviews",
+								"place",
+								"656aeb450b961b164ef13157"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetch review",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reviews/656a40a39a3c4a5dbb1aa6e3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reviews",
+								"656a40a39a3c4a5dbb1aa6e3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update review",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subject\": \"Great place!\",\n    \"content\": \"The food is really good\",\n    \"ratings\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reviews/656816c24969e41500266d21",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reviews",
+								"656816c24969e41500266d21"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reviews/656816f24969e41500266d22",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reviews",
+								"656816f24969e41500266d22"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetch reviews for place",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reviews/place/6567d6cc886c1e4911b3667f",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reviews",
+								"place",
+								"6567d6cc886c1e4911b3667f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY1NmFmYzBiMDJiN2Q4MWIwZjlhNDBmNCIsInVzZXJuYW1lIjoiYXRoYXJ2IiwiZW1haWwiOiJhdGhhcnZAZ21haWwuY29tIiwiYmlvIjoiTXkgbmFtZSBpcyBhdGhhcnYsIEknbSBhbiBhZG1pbiIsImZpcnN0TmFtZSI6IkF0aGFydiIsImxhc3ROYW1lIjoiTWhhdHJlIiwidXNlclJvbGUiOiJBRE1JTiIsInN1YiI6ImF0aGFydiIsImlhdCI6MTcwMTUxMDE1NSwiZXhwIjoxNzAxNTExOTU1fQ.0kG8wsX5rvLTCTg0KtdyZMUUtJ8022uY_MUUS1vzFo0",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "PORT",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "API_VERSION_URI",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

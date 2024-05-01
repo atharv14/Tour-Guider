@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>bing.edu.tourguider.models</OriginalElement>
+  <nodes>
+    <node x="-100.12223789805415" y="-32.72369819341124">bing.edu.tourguider.models.User</node>
+    <node x="-190.45164718384697" y="320.3634431455899">bing.edu.tourguider.models.Admin</node>
+    <node x="101.68220435510113" y="-32.72369819341124">bing.edu.tourguider.models.Review</node>
+    <node x="724.2548969158593" y="236.5188828590889">bing.edu.tourguider.models.RestaurantPlace</node>
+    <node x="466.3405951115834" y="-80.58342189160464">bing.edu.tourguider.models.Place</node>
+    <node x="1230.2502381912125" y="222.22210414452707">bing.edu.tourguider.models.OperatingHours</node>
+    <node x="847.5430393198725" y="17.094646724770158">bing.edu.tourguider.models.PlaceCategory</node>
+    <node x="532.9428802040753" y="571.6538121300356">bing.edu.tourguider.models.ShoppingPlace</node>
+    <node x="77.6822043551011" y="339.1811798158837">bing.edu.tourguider.models.Tourist</node>
+    <node x="1060.4840320275569" y="-80.58342189160464">bing.edu.tourguider.models.OperationTime</node>
+    <node x="197.00717986907648" y="485.6298730658354">bing.edu.tourguider.models.AttractionPlace</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="bing.edu.tourguider.models.ShoppingPlace" target="bing.edu.tourguider.models.Place" relationship="GENERALIZATION">
+      <point x="0.0" y="-31.5" />
+      <point x="68.10228509249191" y="139.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Review" target="bing.edu.tourguider.models.Place" relationship="TO_ONE">
+      <point x="77.0" y="12.140276301806594" />
+      <point x="259.0500249196616" y="58.916578108395356" />
+      <point x="259.0500249196616" y="33.2135473340588" />
+      <point x="364.37922029790275" y="33.2135473340588" />
+      <point x="364.37922029790275" y="58.916578108395356" />
+      <point x="-118.0" y="0.0" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Tourist" target="bing.edu.tourguider.models.Place" relationship="TO_MANY">
+      <point x="101.00000000000003" y="-6.662296956794819" />
+      <point x="569.341" y="364.0188828590889" />
+      <point x="-14.999595111583403" y="139.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.OperationTime" target="bing.edu.tourguider.models.OperatingHours" relationship="TO_MANY">
+      <point x="79.76620616365562" y="31.5" />
+      <point x="0.0" y="-43.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.RestaurantPlace" target="bing.edu.tourguider.models.Place" relationship="GENERALIZATION">
+      <point x="-118.0" y="-1.1554397134989927" />
+      <point x="667.4428802040753" y="302.8634431455899" />
+      <point x="83.10228509249191" y="139.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Admin" target="bing.edu.tourguider.models.User" relationship="GENERALIZATION">
+      <point x="-3.528161530255147E-4" y="-31.500443145589884" />
+      <point x="-112.952" y="230.0" />
+      <point x="-24.622" y="230.0" />
+      <point x="2.378980541521969E-4" y="79.49969819341123" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.AttractionPlace" target="bing.edu.tourguider.models.Place" relationship="GENERALIZATION">
+      <point x="101.50037725823586" y="-2.1147715187908034E-4" />
+      <point x="503.0" y="553.1296615886836" />
+      <point x="503.0" y="553.1298730658355" />
+      <point x="584.341" y="553.1298730658355" />
+      <point x="4.0488841659680475E-4" y="139.50042189160465" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Review" target="bing.edu.tourguider.models.Tourist" relationship="TO_ONE">
+      <point x="-2.8421709430404007E-14" y="79.5" />
+      <point x="0.0" y="-31.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Place" target="bing.edu.tourguider.models.OperationTime" relationship="TO_ONE">
+      <point x="118.0" y="-108.0" />
+      <point x="-187.5" y="0.0" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Tourist" target="bing.edu.tourguider.models.User" relationship="GENERALIZATION">
+      <point x="-101.0" y="0.0" />
+      <point x="-9.622" y="370.6811798158837" />
+      <point x="15.000237898054152" y="79.5" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Place" target="bing.edu.tourguider.models.PlaceCategory" relationship="TO_ONE">
+      <point x="118.0" y="25.6780686163748" />
+      <point x="-82.0" y="0.0" />
+    </edge>
+    <edge source="bing.edu.tourguider.models.Place" target="bing.edu.tourguider.models.Review" relationship="TO_MANY">
+      <point x="-118.0" y="15.0" />
+      <point x="77.0" y="27.140276301806594" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.1159684274438373" showDependencies="true" x="632.5000000000001" y="276.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

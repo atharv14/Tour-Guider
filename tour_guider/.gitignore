@@ -10,7 +10,6 @@
 .svn/
 migrate_working_dir/
 ../backend.zip/
-../tourguider/
 
 # IntelliJ related
 *.iml
