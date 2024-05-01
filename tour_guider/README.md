@@ -18,7 +18,7 @@ The Tour-Guider App is an innovative solution designed to enhance the travel exp
 
 The "Tour-Guider App" project is a comprehensive mobile application designed to enhance the travel experience by providing users with detailed information about various tourist attractions, restaurants, shopping centers, and other points of interest. Key features of the app include robust user authentication, personalized profiles, place management with a favorites system, and an interactive reviews and ratings section.
 
-The app's implementation combines an intuitive front-end design with a secure and efficient [back-end](https://github.com/r15hank/tourguider/blob/main/README.md) architecture. It leverages state management techniques for fluid navigation and real-time updates, and includes robust data models for users, places, and reviews.
+The app's implementation combines an intuitive front-end design with a secure and efficient back-end architecture. It leverages state management techniques for fluid navigation and real-time updates, and includes robust data models for users, places, and reviews.
 
 
 ## Features
