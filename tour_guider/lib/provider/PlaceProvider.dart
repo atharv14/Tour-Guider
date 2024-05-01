@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:tour_guider/provider/ReviewProvider.dart';
+import 'package:tour_guider/provider/UserProvider.dart';
 import '../models/place.dart';
 
 class PlaceProvider with ChangeNotifier {
@@ -32,8 +34,77 @@ class PlaceProvider with ChangeNotifier {
 
   // Add more methods as needed
 
+  Future<Map<String, dynamic>> updatePlace(Place place) async {
+    String categoryEndpoint = '';
+    switch (place.category) {
+      case 'ATTRACTION':
+        categoryEndpoint = '/attractions';
+        break;
+      case 'RESTAURANT':
+        categoryEndpoint = '/restaurants';
+        break;
+      case 'SHOPPING':
+        categoryEndpoint = '/shopping';
+        break;
+      default:
+        categoryEndpoint =
+            ''; // Handle other categories or use a default endpoint
+    }
+
+    final url = Uri.parse('$baseUrl$categoryEndpoint/${place.id}');
+    String? authToken = await _secureStorage.read(key: 'authToken');
+    var jsonPayload =
+        json.encode(place.toJson()); // Convert place object to JSON here
+    debugPrint("Authorization: Bearer $authToken");
+    debugPrint("Updating Payload: $jsonPayload");
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json'
+        },
+        body: jsonPayload,
+      );
+
+      if (response.statusCode == 202) {
+        debugPrint(
+            '$categoryEndpoint place updated successfully.\nResponse:$response\nResponse body:${response.body}');
+        // Assuming API returns the updated place in the response body
+        final updatedPlace = Place.fromJson(json.decode(response.body));
+        _updateLocalPlace(updatedPlace); // Update the place in your local list
+        var decodedResponse = json.decode(response.body);
+        notifyListeners(); // Notify listeners to update the UI
+        return {'success': true, 'placeId': decodedResponse['id']};
+      } else {
+        // Handle error response
+        debugPrint(
+            'Failed to update.\nResponse:$response\nResponse body:${response.body}');
+        return {'success': false};
+      }
+    } on http.ClientException catch (e) {
+      debugPrint('ClientException: ${e.message}, URI: ${e.uri}');
+      return {'success': false, 'error': e.message};
+    } catch (error) {
+      // Handle any exceptions
+      debugPrint('Error updating $categoryEndpoint place: $error');
+      return {'success': false};
+    }
+  }
+
+  void _updateLocalPlace(Place updatedPlace) {
+    int index = _places.indexWhere((place) => place.id == updatedPlace.id);
+    if (index != -1) {
+      _places[index] = updatedPlace;
+    }
+  }
+
   // Method to upload images for places
   Future<void> uploadImagesForPlace(List<File> images, String placeId) async {
+    // First, ensure existing images are downloaded or checked
+    // await downloadImagesForPlace(placeId);
+
     var uri = Uri.parse("$photoUploadUrl/$placeId");
     var request = http.MultipartRequest("POST", uri);
 
@@ -50,16 +121,20 @@ class PlaceProvider with ChangeNotifier {
     String? authToken = await _secureStorage.read(key: 'authToken');
     request.headers['Authorization'] = 'Bearer $authToken';
     // request.headers['Content-Type'] = 'multipart/form-data';
+    try {
+      // Send the request
+      var response = await request.send();
 
-    // Send the request
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      debugPrint("Images uploaded successfully");
-      notifyListeners();
-    } else {
-      final respStr = await response.stream.bytesToString();
-      debugPrint(
-          "Failed to upload images. Status: ${response.statusCode}, Body: $respStr");
+      if (response.statusCode == 200) {
+        debugPrint("Images uploaded successfully");
+        notifyListeners();
+      } else {
+        final respStr = await response.stream.bytesToString();
+        debugPrint(
+            "Failed to upload images. Status: ${response.statusCode}, Body: $respStr");
+      }
+    } catch (e) {
+      debugPrint('Exception in place images upload: $e');
     }
   }
 
@@ -121,19 +196,18 @@ class PlaceProvider with ChangeNotifier {
   }
 
   // Fetch and store images for a given place
-  Future<void> downloadImagesForPlace(
-      String placeId, List<String> imagePaths) async {
-    if (_placeImages.containsKey(placeId) &&
-        _placeImages[placeId]!.isNotEmpty) {
+  Future<void> downloadImagesForPlace(String placeId,
+      [List<String>? imagePaths]) async {
+    if (_placeImages.containsKey(placeId)) {
       debugPrint("Images already downloaded, no need to download again");
       return; // Images already downloaded, no need to download again
     }
 
-    _downloadedImages[placeId] ??= {};
-
     String? authToken = await _secureStorage.read(key: 'authToken');
 
-    for (String path in imagePaths) {
+    _downloadedImages[placeId] ??= {};
+
+    for (String path in imagePaths!) {
       if (!_downloadedImages[placeId]!.contains(path)) {
         try {
           final url = Uri.parse('$photoFetchUrl?photoPath=$path');
@@ -144,6 +218,7 @@ class PlaceProvider with ChangeNotifier {
             _placeImages[placeId] ??= [];
             _placeImages[placeId]?.add(MemoryImage(response.bodyBytes));
             _downloadedImages[placeId]?.add(path); // Mark as downloaded
+            notifyListeners();
           } else {
             debugPrint("Failed to fetch photo: ${response.body}");
           }
@@ -152,7 +227,6 @@ class PlaceProvider with ChangeNotifier {
         }
       }
     }
-    notifyListeners();
   }
 
   // Fetch all places
@@ -173,13 +247,42 @@ class PlaceProvider with ChangeNotifier {
         notifyListeners();
       } else {
         // Handle error
-        debugPrint('Failed to fetch places: ${response.body}');
+        debugPrint(
+            'Failed to fetch places - Status Code: ${response.statusCode}, Body: ${response.body}');
       }
     } catch (e) {
       // Handle exception
       debugPrint('Error fetching places: $e');
     }
     notifyListeners();
+  }
+
+  Future<bool> deletePlace(String placeId, UserProvider userProvider,
+      ReviewProvider reviewProvider) async {
+    final url = Uri.parse('$baseUrl/$placeId');
+    String? authToken = await _secureStorage.read(key: 'authToken');
+
+    try {
+      final response = await http.delete(url, headers: {
+        'Authorization': 'Bearer $authToken',
+        'Content-Type': 'application/json'
+      });
+
+      if (response.statusCode == 200) {
+        _places.removeWhere((place) => place.id == placeId);
+        userProvider.removeSavedPlaceFromUser(placeId);
+        reviewProvider.removeReviewForPlace(placeId);
+        notifyListeners();
+        return true;
+      } else {
+        debugPrint(
+            'Failed to delete place: ${response.body}\n Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (error) {
+      debugPrint('Error deleting place: $error');
+      return false;
+    }
   }
 
   void filterFavoritePlaces(List<String> favoritePlaceIds) {

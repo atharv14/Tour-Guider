@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../models/review.dart';
+import 'UserProvider.dart';
 
 class ReviewProvider with ChangeNotifier {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -24,6 +25,11 @@ class ReviewProvider with ChangeNotifier {
   String baseUrl = 'http://192.168.1.85:8080/api/v1/reviews';
   String photoBaseUrl = 'http://192.168.1.85:8080/api/v1/photos/upload/review';
   String photoUrl = 'http://192.168.1.85:8080/api/v1/photos/fetch';
+
+  void removeReviewForPlace(String placeId) {
+    _reviews.removeWhere((review) => review.placeId == placeId);
+    notifyListeners();
+  }
 
   Future<void> downloadReviewImages(
       String reviewId, List<String> imagePaths) async {
@@ -196,7 +202,7 @@ class ReviewProvider with ChangeNotifier {
           _reviews[reviewIndex] = updatedReview;
           notifyListeners();
         } else {
-          // Handle non-200 responses
+          // Handle non-202 responses
           debugPrint('Failed to update the review: ${response.body}');
         }
       } catch (error) {
@@ -207,7 +213,7 @@ class ReviewProvider with ChangeNotifier {
   }
 
   // deleteReview - DELETE
-  Future<void> deleteReview(String reviewId) async {
+  Future<void> deleteReview(String reviewId,  UserProvider userProvider) async {
     final url = Uri.parse('$baseUrl/$reviewId');
     String? authToken =
         await _secureStorage.read(key: 'authToken'); // Get the auth token
@@ -223,6 +229,8 @@ class ReviewProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _reviews.removeWhere((review) => review.id == reviewId);
+        // Also update the user's data
+        userProvider.removeReviewFromUser(reviewId);
         notifyListeners();
       } else {
         // Handle non-200 responses

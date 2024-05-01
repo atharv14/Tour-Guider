@@ -2,32 +2,21 @@ import 'place.dart';
 import 'review.dart';
 
 class Shopping extends Place {
-  late final List<String> associatedBrands;
+  List<String> associatedBrands;
 
   Shopping({
-    required String id,
-    required String name,
-    required String description,
-    required String category,
-    double? averageRating,
-    List<Review>? reviews,
-    required Map<String, dynamic> address,
-    required List<String> contactInfo,
-    List<String>? imageUrl,
-    required Map<String, dynamic> operatingHours,
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.category,
+    super.averageRating,
+    super.reviews,
+    required super.address,
+    required super.contactInfo,
+    super.imageUrl,
+    required super.operatingHours,
     required this.associatedBrands,
-  }) : super(
-    id: id,
-    name: name,
-    description: description,
-    category: category,
-    averageRating: averageRating,
-    reviews: reviews,
-    address: address,
-    contactInfo: contactInfo,
-    imageUrl: imageUrl,
-    operatingHours: operatingHours,
-  );
+  });
 // JSON conversion methods if needed
   factory Shopping.fromJson(Map<String, dynamic> json) {
     return Shopping(
@@ -36,9 +25,10 @@ class Shopping extends Place {
       description: json['description'],
       category: json['category'],
       averageRating: json['averageRatings'],
-      reviews: (json['reviews'] as List<dynamic>?)
-          ?.map((e) => Review.fromJson(e))
-          .toList(),
+      reviews: json['reviews'] != null
+          ? List<Review>.from(
+          json['reviews'].map((x) => Review.fromJson(x)))
+          : null,
       address: json['address'],
       contactInfo: List<String>.from(json['contact']),
       imageUrl: json["photos"] != null

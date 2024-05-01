@@ -12,11 +12,19 @@ class UserProvider with ChangeNotifier {
   User? _loggedInUser;
   List<User> _allUsers = [];
   final Map<String, User> _usersCache = {};
+  ImageProvider? _profileImage;
+  final Map<String, ImageProvider> _userImages = {}; // new
+
+  // Getters
+  User? get loggedInUser => _loggedInUser;
   List<String> get favoritePlaceIds =>
       _user?.savedPlaces?.map((place) => place.id).toList() ?? [];
-  ImageProvider? _profileImage;
+  User? get user => _user;
+  List<User> get allUsers => List.unmodifiable(_allUsers);
+  Map<String, User> get usersCache => _usersCache;
+  ImageProvider? get profileImage => _profileImage;
+  ImageProvider? getUserImage(String userId) => _userImages[userId]; // new
 
-  final Map<String, ImageProvider> _userImages = {}; // new
 
   String ipPort = 'http://192.168.1.85:8080';
 
@@ -28,15 +36,23 @@ class UserProvider with ChangeNotifier {
       'http://192.168.1.85:8080/api/v1/users/loggedInUser';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
-  User? get user => _user;
-  List<User> get allUsers => List.unmodifiable(_allUsers);
-  Map<String, User> get usersCache => _usersCache;
-  ImageProvider? get profileImage => _profileImage;
-  ImageProvider? getUserImage(String userId) => _userImages[userId]; // new
-
+  // Setter
   void setUser(User newUser) {
     _user = newUser;
     notifyListeners();
+  }
+
+  void removeReviewFromUser(String reviewId) {
+    if (_loggedInUser != null) {
+      _loggedInUser!.reviews?.removeWhere((review) => review.id == reviewId);
+      notifyListeners();  // Notify listeners to update the UI if necessary
+    }
+  }
+  void removeSavedPlaceFromUser(String placeId) {
+    if (_loggedInUser != null) {
+      _loggedInUser!.savedPlaces!.removeWhere((place) => place.id == placeId);
+      notifyListeners();  // Notify listeners to update the UI if necessary
+    }
   }
 
   // to Change Password
@@ -290,35 +306,35 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to remove a place from the user's saved places
-  Future<bool> removePlaceFromUser(Place place) async {
-    String? authToken = await _secureStorage.read(key: 'authToken');
-    if (authToken == null) return false;
-
-    try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/place/${place.id}'), // Use DELETE method
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $authToken',
-        },
-      );
-
-      if (response.statusCode == 204) {
-        // Remove the place from the _user's saved places list
-        _user?.savedPlaces?.removeWhere((p) => p.id == place.id);
-        notifyListeners(); // Notify listeners about the change
-        return true;
-      } else {
-        // Handle error
-        debugPrint('Error removing place: ${response.body}');
-        return false;
-      }
-    } catch (error) {
-      debugPrint('Error removing place: $error');
-      return false;
-    }
-  }
+  // // Method to remove a place from the user's saved places
+  // Future<bool> removePlaceFromUser(Place place) async {
+  //   String? authToken = await _secureStorage.read(key: 'authToken');
+  //   if (authToken == null) return false;
+  //
+  //   try {
+  //     final response = await http.put(
+  //       Uri.parse('$baseUrl/place/${place.id}'), // Use DELETE method
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $authToken',
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 204) {
+  //       // Remove the place from the _user's saved places list
+  //       _user?.savedPlaces?.removeWhere((p) => p.id == place.id);
+  //       notifyListeners(); // Notify listeners about the change
+  //       return true;
+  //     } else {
+  //       // Handle error
+  //       debugPrint('Error removing place: ${response.body}');
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     debugPrint('Error removing place: $error');
+  //     return false;
+  //   }
+  // }
 
   // Fetch a user by ID
   Future<User?> fetchUserById(String userId) async {

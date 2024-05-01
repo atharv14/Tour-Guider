@@ -6,7 +6,6 @@ import '../models/user.dart';
 import '../provider/ReviewProvider.dart';
 import '../provider/UserProvider.dart';
 import 'AddEditReviewScreen.dart';
-import 'UserProfileScreen.dart';
 
 class ReviewDetailScreen extends StatefulWidget {
   final Review review;
@@ -33,8 +32,10 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
 
   Future<void> _fetchImages() async {
     if (widget.review.photos != null && widget.review.photos!.isNotEmpty) {
-      final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
-      await reviewProvider.downloadReviewImages(widget.review.id, widget.review.photos!);
+      final reviewProvider =
+          Provider.of<ReviewProvider>(context, listen: false);
+      await reviewProvider.downloadReviewImages(
+          widget.review.id, widget.review.photos!);
     }
   }
 
@@ -73,6 +74,65 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
     });
   }
 
+  Widget _buildImageList(String reviewId) {
+    final reviewProvider = Provider.of<ReviewProvider>(context);
+    var images = reviewProvider.getReviewImages(reviewId);
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => showImageDialog(context, images[index]),
+            child: Image(
+              image: images[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void showImageDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: PhotoView(
+          imageProvider: image,
+          backgroundDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget _buildImageCarousel(String reviewId) {
+  //   final images =
+  //       Provider.of<ReviewProvider>(context).getReviewImages(reviewId);
+  //   return SizedBox(
+  //     height: 200,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: images.length,
+  //       itemBuilder: (context, index) {
+  //         return GestureDetector(
+  //           onTap: () => showImageDialog(context, images[index]),
+  //           child: Image(
+  //             image: images[index], //width: 100, height: 100,
+  //             fit: BoxFit.cover,
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final reviewProvider = Provider.of<ReviewProvider>(context);
@@ -105,43 +165,37 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
               onPressed: () async {
                 // Confirm deletion with the user before proceeding
                 final confirmDelete = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Delete Review'),
-                      content: const Text('Are you sure you want to delete this review?'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('Cancel'),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Review not deleted.')),
-                            );
-                            Navigator.of(context).pop(false);
-                          },
-                        ),
-                        TextButton(
-                          child: const Text('Delete'),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Review deleted successfully.')),
-                            );
-                            Navigator.of(context).pop(true);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ) ?? false;
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Review'),
+                          content: const Text(
+                              'Are you sure you want to delete this review?'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () => Navigator.of(context).pop(false),
+                            ),
+                            TextButton(
+                              child: const Text('Delete'),
+                              onPressed: () => Navigator.of(context).pop(true),
+                            ),
+                          ],
+                        );
+                      },
+                    ) ??
+                    false;
 
                 if (!mounted) return;
 
                 if (confirmDelete) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Review deleted successfully!')),
+                    const SnackBar(
+                        content: Text('Review deleted successfully!')),
                   );
                   // Delete the review
-                  await reviewProvider.deleteReview(detailedReview.id);
+                  UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+                  await reviewProvider.deleteReview(detailedReview.id, userProvider);
                   // Navigate back or refresh as needed
                   Navigator.of(context).pop(); // Go back to the previous screen
                 }
@@ -224,51 +278,12 @@ class _ReviewDetailScreenState extends State<ReviewDetailScreen> {
                     // Display images if available
                     if (detailedReview.photos?.isNotEmpty == true) ...[
                       const SizedBox(height: 20),
-                      _buildImageList(detailedReview.id ?? ''),
+                      _buildImageList(detailedReview.id),
                     ],
                   ],
                 ),
               );
             },
-          );
-        },
-      ),
-    );
-  }
-
-  void showImageDialog(BuildContext context, ImageProvider image) {
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        child: PhotoView(
-          imageProvider: image,
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.transparent,
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildImageList(String reviewId) {
-    final reviewProvider = Provider.of<ReviewProvider>(context);
-    var images = reviewProvider.getReviewImages(reviewId);
-
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => showImageDialog(context, images[index]),
-            child: Image(
-              image: images[index],
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
           );
         },
       ),

@@ -22,17 +22,17 @@ class Review {
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
-      rating: (json['ratings']).toDouble(), // Assuming 'ratings' is an integer
-      subject: json['subject'],
-      content: json['content'],
-      dateTime: DateTime.parse(json['dateTime']),
-      userId: json['userId'],
-      placeId: json['placeId'],
+      rating: (json['ratings']).toDouble(),
+      subject: json['subject'] ?? '',
+      content: json['content'] ?? '',
+      dateTime: json['dateTime'] != null ? DateTime.parse(json['dateTime']) : DateTime.now(),
+      userId: json['userId'] ?? '',
+      placeId: json['placeId'] ?? '',
       photos: json["photos"] != null
           ? List<String>.from(
           json['photos'].map((photo) => photo['path'] as String)
       )
-          : null,
+          : [],
     );
   }
 

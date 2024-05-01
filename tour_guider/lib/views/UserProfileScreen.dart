@@ -25,7 +25,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   // ${_loggedInUser!.profilePhotoPath!}
   Future<void> _fetchUserPhoto() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userId = userProvider.user?.id;
+    // final userId = userProvider.user?.id;
     final photoPath = userProvider.user?.profilePhotoPath;
     if (photoPath != null) {
       await userProvider.downloadImage(photoPath);
@@ -46,7 +46,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void dispose() {
     widget.onBack?.call(); // Invoke the callback
     super.dispose();
-
   }
 
   @override

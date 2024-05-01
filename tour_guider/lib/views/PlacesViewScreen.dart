@@ -43,25 +43,25 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
     fToast.init(context); // Initialize FToast with context
   }
 
-  void _onSearch(String query) {
-    if (query.isNotEmpty) {
-      displayMode = DisplayMode.search;
-      // Execute search logic and update places list
-    } else {
-      displayMode = DisplayMode.all;
-      // Reset to show all places
-    }
-  }
-
-  void _onChipSelected(String category) {
-    if (category == 'All') {
-      displayMode = DisplayMode.all;
-      // Logic to show all places
-    } else {
-      displayMode = DisplayMode.filtered;
-      // Logic to filter places by category
-    }
-  }
+  // void _onSearch(String query) {
+  //   if (query.isNotEmpty) {
+  //     displayMode = DisplayMode.search;
+  //     // Execute search logic and update places list
+  //   } else {
+  //     displayMode = DisplayMode.all;
+  //     // Reset to show all places
+  //   }
+  // }
+  //
+  // void _onChipSelected(String category) {
+  //   if (category == 'All') {
+  //     displayMode = DisplayMode.all;
+  //     // Logic to show all places
+  //   } else {
+  //     displayMode = DisplayMode.filtered;
+  //     // Logic to filter places by category
+  //   }
+  // }
 
   Future<void> _loadDataForCurrentUser() async {
     final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
@@ -222,7 +222,6 @@ class _PlacesViewScreenState extends State<PlacesViewScreen> {
       floatingActionButton: isAdmin
           ? FloatingActionButton(
               onPressed: () {
-                //ToDo Handle adding new Places
                 Navigator.push(
                   context,
                   MaterialPageRoute(

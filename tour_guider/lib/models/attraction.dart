@@ -2,10 +2,10 @@ import 'review.dart';
 import 'place.dart';
 
 class Attraction extends Place {
-  late final bool parkingAvailable;
-  late final double entryFee;
-  late final String theme;
-  late final bool kidFriendly;
+  bool parkingAvailable;
+  double entryFee;
+  String theme;
+  bool kidFriendly;
 
   Attraction({
     required super.id,
@@ -31,9 +31,10 @@ class Attraction extends Place {
       description: json['description'],
       category: json['category'],
       averageRating: json['averageRatings'],
-      reviews: (json['reviews'] as List<dynamic>?)
-          ?.map((e) => Review.fromJson(e))
-          .toList(),
+      reviews: json['reviews'] != null
+          ? List<Review>.from(
+          json['reviews'].map((x) => Review.fromJson(x)))
+          : null,
       address: json['address'],
       contactInfo: List<String>.from(json['contact']),
       imageUrl: json["photos"] != null

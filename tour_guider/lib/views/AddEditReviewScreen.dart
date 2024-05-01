@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import '../models/review.dart';
 import '../provider/ReviewProvider.dart';
-import '../provider/UserProvider.dart'; // Import your review model
-import 'package:http/http.dart' as http;
+import '../provider/UserProvider.dart'; // Import review model
 
 class AddEditReviewScreen extends StatefulWidget {
   final Review? review; // Nullable for add, non-null for edit
@@ -58,15 +58,48 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
         _bodyController.text.isNotEmpty;
   }
 
+  Widget _buildImageList(String reviewId) {
+    final reviewProvider = Provider.of<ReviewProvider>(context);
+    var images = reviewProvider.getReviewImages(reviewId);
+
+    return SizedBox(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () => showImageDialog(context, images[index]),
+            child: Image(
+              image: images[index],
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void showImageDialog(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        child: PhotoView(
+          imageProvider: image,
+          backgroundDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
-
-    // Function to get initials from user's name
-    // String getInitials(String name) => name.isNotEmpty
-    //     ? name.trim().split(' ').map((l) => l[0]).take(2).join()
-    //     : 'X';
 
     return Scaffold(
       appBar: AppBar(
@@ -133,20 +166,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                   ),
                   const SizedBox(height: 10),
                   const Text('Add Images (optional):'),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _images!.isEmpty
-                          ? [const Text('No images')]
-                          : _images!.map((file) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child:
-                                    Image.file(file, width: 100, height: 100),
-                              );
-                            }).toList(),
-                    ),
-                  ),
+                  _buildImageList(widget.review?.id??''),
                   ElevatedButton(
                     onPressed: _pickImage,
                     child: const Text('Pick Image'),
@@ -195,7 +215,7 @@ class _AddEditReviewScreenState extends State<AddEditReviewScreen> {
                         // Upload images if there are any
                         if (_images != null && _images!.isNotEmpty) {
                           await reviewProvider.uploadReviewImages(
-                              _images!, newReview.id);
+                              _images!, reviewId);
                         }
                         // Show success message and navigate back
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -15,7 +15,7 @@ import '../provider/ReviewProvider.dart'; // Import ReviewProvider
 import 'AddEditReviewScreen.dart'; // Import Add or Edit Review screen
 import 'LoginScreen.dart'; // Import login screen
 import 'PlacesViewScreen.dart'; //Import places view screen
-import 'UserProfileScreen.dart';  // Import User Profile screen
+import 'UserProfileScreen.dart'; // Import User Profile screen
 import 'place_update_screen.dart'; // Import place update screen
 
 class PlaceDetailScreen extends StatefulWidget {
@@ -43,8 +43,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint("Init stated called");
     fToast = FToast();
     fToast.init(context); // Initialize FToast with context
+    setupData();
+  }
+
+  void setupData() {
     final placeProvider = Provider.of<PlaceProvider>(context, listen: false);
     _placeFuture = placeProvider.fetchPlaceById(widget.placeId);
     final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
@@ -124,10 +129,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UpdatePlaceScreen(place: snapshot.data!),
+                          builder: (context) =>
+                              UpdatePlaceScreen(place: snapshot.data!),
                         ),
                       ).then((_) {
-                        // Optional: Refresh any data or state when returning from the UpdatePlaceScreen
+                        // Refresh the place details after updates
+                        setupData();
+                      }, onError: (e) {
+                        debugPrint('Error on setupData: $e');
                       });
                     },
                     tooltip: 'Edit the place',
@@ -147,11 +156,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
-          }
-          else if (snapshot.hasError) {
+          } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
-          }
-          else if (!snapshot.hasData) {
+          } else if (!snapshot.hasData) {
             return const Text('Place not found');
           }
 
@@ -168,31 +175,31 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               Expanded(
                   child: _buildPlaceDetails(place, isFavorite, userProvider)),
               // Filter section for sorting reviews
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Text('Sort by: '),
-                    DropdownButton<String>(
-                      value: selectedSortOption,
-                      items: <String>['New to Old', 'Recent', 'Relevant']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedSortOption = newValue!;
-                        });
-                        // Implement sorting logic here
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(10),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.end,
+              //     children: [
+              //       const Text('Sort by: '),
+              //       DropdownButton<String>(
+              //         value: selectedSortOption,
+              //         items: <String>['New to Old', 'Recent', 'Relevant']
+              //             .map<DropdownMenuItem<String>>((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: Text(value),
+              //           );
+              //         }).toList(),
+              //         onChanged: (String? newValue) {
+              //           setState(() {
+              //             selectedSortOption = newValue!;
+              //           });
+              //           // Implement sorting logic here
+              //         },
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
               // Bottom 60% of the screen for review section
               Expanded(
@@ -213,7 +220,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 placeId: widget.placeId,
               ),
             ),
-          ).then((_) => _refreshReviews());
+          ).then((_) {
+            // Refresh the place reviews details after updates
+            _refreshReviews();
+          });
         },
         tooltip: 'Add new Review',
         child: const Text('Write a Review'),
@@ -262,33 +272,43 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         "Place: $place \nProcessing place of category: ${place.category}");
     if (place is Attraction) {
       debugPrint("It's an attraction.");
-      details.add(Text("Theme: ${place.theme}"));
-      details.add(Text("Entry Fee: \$${place.entryFee}"));
-      details.add(Text("Kid Friendly: ${place.kidFriendly ? 'Yes' : 'No'}"));
+      details.add(buildBoldText('Theme: ', place.theme));
+      details.add(buildBoldText('Entry Fee: ', "\$${place.entryFee}"));
       details.add(
-          Text("Parking Available: ${place.parkingAvailable ? 'Yes' : 'No'}"));
+          buildBoldText('Kid Friendly: ', place.kidFriendly ? 'Yes' : 'No'));
+      details.add(buildBoldText(
+          'Parking Available: ', place.parkingAvailable ? 'Yes' : 'No'));
     } else if (place is Restaurant) {
       debugPrint("It's a restaurant.");
-      details.add(Text("Cuisines: ${place.cuisines.join(', ')}"));
-      details.add(Text("Price for Two: \$${place.priceForTwo}"));
-      details.add(Text(
-          "Reservations: ${place.reservationsRequired ? 'Required' : 'Not required'}"));
-      details.add(Text("Type of Restaurant: ${place.type}"));
+      details.add(buildBoldText('Cuisines: ', place.cuisines.join(', ')));
+      details.add(buildBoldText('Price for Two: ', '\$${place.priceForTwo}'));
+      details.add(buildBoldText('Type of Restaurant: ', place.type));
+      details.add(buildBoldText('Reservations Required: ',
+          place.reservationsRequired ? 'Yes' : 'No'));
     } else if (place is Shopping) {
       debugPrint("It's a shopping.");
-      details.add(Text.rich(
-        TextSpan(
-          children: [
-            const TextSpan(
-              text: "Associated Brands: \n",
-              style: TextStyle(fontWeight: FontWeight.w900),
-            ),
-            TextSpan(text: place.associatedBrands.join(', ')),
-          ],
-        ),
-      ));
+      details.add(buildBoldText(
+          'Associated Brands: ', place.associatedBrands.join(', ')));
     }
     return details;
+  }
+
+  Widget buildBoldText(String label, String value) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          TextSpan(
+            text: value,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPlaceDetails(place, bool isFavorite, UserProvider userProvider) {
@@ -322,9 +342,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         color: isFavorite ? Colors.red : Colors.grey,
                       ),
                       onPressed: () {
-                        userProvider.toggleFavoriteStatus(place).then((_) {
-                          setState(() {});
-                        });
+                        userProvider.toggleFavoriteStatus(place);
                         userProvider.fetchUserDetails();
                       },
                       tooltip: 'Add or Remove From Favorite',
@@ -351,38 +369,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       Text(place.category,
                           style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(place.description),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'Location: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            TextSpan(
-                              text: place.location,
-                            ),
-                          ],
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(place.description),
                         ),
                       ),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'Contact: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            TextSpan(
-                              text: place.formattedContactInfo,
-                            ),
-                          ],
-                        ),
-                      ),
-                      ...categoryDetails,
+                      buildBoldText('Location: ', '${place.location}'),
+                      buildBoldText(
+                          'Contact: ', '${place.formattedContactInfo}'),
+                      ...categoryDetails
+                          .map((detail) => Expanded(child: detail)),
                     ],
                   ),
                 ),
@@ -418,7 +414,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   Widget _buildReviewsSection(String placeId) {
     // final reviewProvider = Provider.of<ReviewProvider>(context, listen: false);
-
     return Column(
       children: [
         Expanded(
@@ -475,8 +470,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         }
 
         final reviewAuthor = userSnapshot.data!;
-        userProvider.downloadImageIfNeeded(
-            reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
+        // userProvider.downloadImageIfNeeded(
+        //     reviewAuthor.id, reviewAuthor.profilePhotoPath ?? '');
 
         return GestureDetector(
           onTap: () {
@@ -486,7 +481,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               MaterialPageRoute(
                 builder: (context) => ReviewDetailScreen(review: review),
               ),
-            ).then((_) => _refreshReviews());
+            ).then((_) {
+              _refreshReviews();
+            });
           },
           child: Card(
             margin: const EdgeInsets.all(8.0),
